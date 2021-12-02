@@ -1,0 +1,1 @@
+GET http://localhost:8080/be_java_web/api/v1/signup?fullname=Phạm Minh Phát&username=phatphamm02&password=123456
