@@ -17,7 +17,7 @@ public class ProductBuilder implements IProductBuilder {
     private String longDescription;
     private String shortDescription;
     private String color;
-    private String brand;
+    private String brandId;
     private String brandName;
     private ArrayList<String> filters;
     private ArrayList<FilterModel> facets;
@@ -66,8 +66,8 @@ public class ProductBuilder implements IProductBuilder {
     }
 
     @Override
-    public ProductBuilder addBrand(String brand) {
-        this.brand = brand;
+    public ProductBuilder addBrandId(String brandId) {
+        this.brandId = brandId;
         return this;
     }
 
@@ -139,6 +139,6 @@ public class ProductBuilder implements IProductBuilder {
 
     @Override
     public ProductModel build() {
-        return new ProductModel(id, name, categories, categoryPath, price, discountPrice, imageCovers, images, longDescription, shortDescription, color, brand, brandName, slug, isFeatured, filters, facets, createAt, variants);
+        return new ProductModel(id, name, categories, categoryPath, price, discountPrice, imageCovers, images, longDescription, shortDescription, color, brandId, brandName, slug, isFeatured, filters, facets, createAt, variants);
     }
 }

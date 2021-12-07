@@ -1,14 +1,17 @@
 package com.api.model.filter;
 
+import java.util.ArrayList;
+
 public class FilterModel {
     private String id;
     private String type;
     private String name;
-
-    public FilterModel(String id, String type, String name) {
+    private ArrayList<FilterModel> children;
+    public FilterModel(String id, String type, String name, ArrayList<FilterModel> children) {
         this.id = id;
         this.type = type;
         this.name = name;
+        this.children = children;
     }
 
     public FilterModel() {
@@ -36,6 +39,21 @@ public class FilterModel {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+
+    /**
+     * @return ArrayList<FilterModel> return the children
+     */
+    public ArrayList<FilterModel> getChildren() {
+        return children;
+    }
+
+    /**
+     * @param children the children to set
+     */
+    public void setChildren(ArrayList<FilterModel> children) {
+        this.children = children;
     }
 
 }

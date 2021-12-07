@@ -10,11 +10,9 @@ public interface IProductDAO {
 
     ProductModel addOne(ProductModel product);
 
-    ArrayList<ProductModel> getAll(ArrayList<String> fieldLimits);
-
     ArrayList<ProductModel> getAll();
 
-    ArrayList<ProductModel> getAll(String categoryPath, BasicDBObject filters, BasicDBObject sort, ArrayList<String> fieldLimits);
+    ArrayList<ProductModel> getAll(String categoryPath, BasicDBObject filters, BasicDBObject sort);
 
     ProductModel updateOne(String id, ProductModel newProduct);
 

@@ -10,7 +10,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.api.helper.HandleData;
-import com.api.helper.HandleJson;
+import static com.api.helper.HandleJson.printJson;
+import static com.api.helper.HandleJson.printJsonError;
 import com.api.service.auth.AuthService;
 import com.api.service.auth.IAuthService;
 import com.api.utils.Email;
@@ -55,12 +56,12 @@ public class ForgotPassword extends HttpServlet {
                 throw new Exception("There were an error. Please try again!");
             }
 
-            String jsonString = String.format("{ status: %s , message: %s }", "success",
-                    "Please check your email to get your reset password code");
-            HandleJson.printJson(jsonString, 200, resp);
+            String json = String.format("{ status: %s , message: %s, email: %s }", "success",
+                    "Please check your email to get your reset password code", userEmail);
+            printJson(json, 200, resp);
 
         } catch (Exception e) {
-            HandleJson.printJsonError("fail", e.getMessage(), 404, resp);
+            printJsonError("fail", e.getMessage(), 404, resp);
         }
     }
 }

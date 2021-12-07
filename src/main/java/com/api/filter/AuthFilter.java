@@ -28,7 +28,7 @@ public class AuthFilter implements Filter {
 
     boolean checkJwtIsNull = jwt == null;
     if (checkJwtIsNull) {
-    throw new IOException("Requires login to authenticate user");
+      throw new IOException("Requires login to authenticate user");
     }
 
     try {

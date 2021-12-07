@@ -22,7 +22,7 @@ public class TokenJwt {
     try {
       Date date = Common.time(60 * 60 * 4);
 
-      String id = user.getId().toString();
+      String id = user.get_id();
       String email = user.getEmail();
       String fname = user.getFname();
       String lname = user.getLname();

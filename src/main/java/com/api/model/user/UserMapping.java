@@ -11,8 +11,6 @@ public class UserMapping implements IMapping<UserModel> {
     String password = object.get("password") != null ? object.get("password").getAsString() : null;
     String passwordConfirm = object.get("passwordConfirm") != null ? object.get("passwordConfirm").getAsString() : null;
     String phoneNumber = object.get("phoneNumber") != null ? object.get("phoneNumber").getAsString() : null;
-    String photo = object.get("photo") != null ? object.get("photo").getAsString() : null;
-
     return new UserBuilder()
               .addFname(fname)
               .addLname(lname)
@@ -20,7 +18,6 @@ public class UserMapping implements IMapping<UserModel> {
               .addPassword(password)
               .addPasswordConfirm(passwordConfirm)
               .addPhoneNumber(phoneNumber)
-              .addPhoto(photo)
               .build();
   }
 }

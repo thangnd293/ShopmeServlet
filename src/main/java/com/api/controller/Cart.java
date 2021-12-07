@@ -10,11 +10,11 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.api.helper.Check;
 import com.api.helper.HandleData;
-import com.api.helper.HandleJson;
+import static com.api.helper.HandleJson.printJson;
+import static com.api.helper.HandleJson.printJsonError;
 import com.api.helper.returnClass.JsonOne;
 import com.api.model.cart.CartModel;
 import com.api.service.cart.CartService;
-import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
 @WebServlet(urlPatterns = "/api/v1/cart/*")
@@ -27,10 +27,11 @@ public class Cart extends HttpServlet {
             CartService cartService = new CartService();
             CartModel cart = cartService.getCart(userId);
             JsonOne<CartModel> result = new JsonOne<CartModel>(cart);
-            String jsonString = new Gson().toJson(result).replace("\\\"", "");
-            HandleJson.printJson(jsonString, 200, resp);
+
+            String json = result.toString();
+            printJson(json, 200, resp);
         } catch (Exception e) {
-            HandleJson.printJsonError("fail", e.getMessage(), 404, resp);
+            printJsonError("fail", e.getMessage(), 404, resp);
         }
     }
 
@@ -39,7 +40,7 @@ public class Cart extends HttpServlet {
         resp.setContentType("application/json");
         String pathInfo = req.getPathInfo();
         if (pathInfo == null) {
-            HandleJson.printJsonError("fail", "Not found", 404, resp);
+            printJsonError("fail", "Not found", 404, resp);
         } else {
             String[] pathParts = pathInfo.split("/");
             if (pathParts.length == 2 && pathParts[1].equals(("add-to-cart"))) {
@@ -54,12 +55,15 @@ public class Cart extends HttpServlet {
                     CartService cartService = new CartService();
                     CartModel cart = cartService.addToCart(userId, productVariation, quantity);
                     JsonOne<CartModel> result = new JsonOne<CartModel>(cart);
-                    String jsonString = new Gson().toJson(result).replace("\\\"", "");
-                    HandleJson.printJson(jsonString, 200, resp);
+
+                    String json = result.toString();
+                    printJson(json, 200, resp);
 
                 } catch (Exception e) {
-                    HandleJson.printJsonError("fail", e.getMessage(), 400, resp);
+                    printJsonError("fail", e.getMessage(), 404, resp);
                 }
+            } else {
+                printJsonError("fail", "Not found", 404, resp);
             }
         }
     }
@@ -75,13 +79,14 @@ public class Cart extends HttpServlet {
                     : null;
             int quantity = data.get("quantity") != null ? data.get("quantity").getAsInt() : null;
             CartService cartService = new CartService();
-            CartModel cart = cartService.updateCart(userId, productVariation, quantity);
+            CartModel cart = cartService.updateItem(userId, productVariation, quantity);
             JsonOne<CartModel> result = new JsonOne<CartModel>(cart);
-            String jsonString = new Gson().toJson(result).replace("\\\"", "");
-            HandleJson.printJson(jsonString, 200, resp);
+
+            String json = result.toString();
+            printJson(json, 200, resp);
 
         } catch (Exception e) {
-            HandleJson.printJsonError("fail", e.getMessage(), 400, resp);
+            printJsonError("fail", e.getMessage(), 400, resp);
         }
     }
 
@@ -90,7 +95,7 @@ public class Cart extends HttpServlet {
         resp.setContentType("application/json");
         String pathInfo = req.getPathInfo();
         if (pathInfo == null) {
-            HandleJson.printJsonError("fail", "Not found", 404, resp);
+            printJsonError("fail", "Not found", 404, resp);
         } else {
             String[] pathParts = pathInfo.split("/");
             if (pathParts.length == 2 && Check.isNumeric(pathParts[1])) {
@@ -102,17 +107,17 @@ public class Cart extends HttpServlet {
                     CartService cartService = new CartService();
                     CartModel cart = cartService.removeItem(userId, productVariation);
                     JsonOne<CartModel> result = new JsonOne<CartModel>(cart);
-                    String jsonString = new Gson().toJson(result).replace("\\\"", "");
-                    HandleJson.printJson(jsonString, 200, resp);
+
+                    String json = result.toString();
+                    printJson(json, 200, resp);
 
                 } catch (Exception e) {
-                    HandleJson.printJsonError("fail", e.getMessage(), 400, resp);
+                    printJsonError("fail", e.getMessage(), 400, resp);
                 }
                 ;
             } else {
-                HandleJson.printJsonError("fail", "Not found", 404, resp);
+                printJsonError("fail", "Not found", 404, resp);
             }
         }
-
     }
 }

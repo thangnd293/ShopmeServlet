@@ -49,7 +49,7 @@ public class ProductMapping implements IMapping<ProductModel> {
         : null;
 
     String color = object.get("color") != null ? object.get("color").getAsString() : null;
-    String brand = object.get("brandId") != null ? object.get("brandId").getAsString() : null;
+    String brandId = object.get("brandId") != null ? object.get("brandId").getAsString() : null;
 
     Boolean isFeatured = object.get("isFeatured") != null ? object.get("isFeatured").getAsBoolean() : null;
 
@@ -103,7 +103,7 @@ public class ProductMapping implements IMapping<ProductModel> {
     return new ProductBuilder()
         .addCategories(categories)
         .addColor(color)
-        .addBrand(brand)
+        .addBrandId(brandId)
         .addFilters(filters)
         .addImageCovers(imageCovers)
         .addImages(images)

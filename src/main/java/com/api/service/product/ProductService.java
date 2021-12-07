@@ -15,37 +15,43 @@ import com.api.model.variant.VariantModel;
 import com.mongodb.BasicDBObject;
 
 public class ProductService implements IProductService {
+   
+    @Override
+    public ProductModel getProduct(String id) throws Exception {
+        ProductDAO productDao = new ProductDAO();
+        ProductModel product = productDao.getOne(id);
+        if (product == null) {
+            throw new Exception("Product does not exist!!");
+        }
+
+        product.setFacets(null);
+        return product;
+    }
 
     @Override
     public ArrayList<ProductModel> getAllProduct() {
         ProductDAO productDao = new ProductDAO();
-
         return productDao.getAll();
     }
 
     @Override
-    public ArrayList<ProductModel> getAllProduct(ArrayList<String> fieldLimits) {
-        ProductDAO productDao = new ProductDAO();
-
-        return productDao.getAll(fieldLimits);
-    }
-
-    @Override
-    public ArrayList<ProductModel> getAllProduct(String categoryId, String[] filter, String sortParam,
-            ArrayList<String> fieldLimits) throws Exception {
+    public ArrayList<ProductModel> getAllProduct(String categoryId, String[] filter, String sortParam)
+            throws Exception {
         ProductDAO productDao = new ProductDAO();
         CategoryDAO categoryDAO = new CategoryDAO();
 
-        CategoryModel category = categoryDAO.getOne(categoryId);
-        if (categoryId != null && category == null) {
-            throw new Exception("Invalid category!!");
-        }
+        String categoryPath = "/";
 
-        String categoryPath = category == null ? "/" : category.getPath();
+        if (categoryId == null) {
+            categoryPath = "/";
+        } else {
+            CategoryModel category = categoryDAO.getOne(categoryId);
+            categoryPath = categoryId == null ? "/" : category.getPath();
+        }
 
         ArrayList<ProductModel> productList = new ArrayList<ProductModel>();
 
-        productList = productDao.getAll(categoryPath, filterProduct(filter), sortProduct(sortParam), fieldLimits);
+        productList = productDao.getAll(categoryPath, filterProduct(filter), sortProduct(sortParam));
 
         return productList;
     }
@@ -53,7 +59,7 @@ public class ProductService implements IProductService {
     @Override
     public ProductModel addProduct(ProductModel product) throws Exception {
 
-        if (product.getCategories() == null || product.getBrand() == null || product.getImageCovers() == null
+        if (product.getCategories() == null || product.getBrandId() == null || product.getImageCovers() == null
                 || product.getImages() == null || product.getColor() == null || product.getVariants() == null) {
             throw new Exception("Missing values!!");
         }
@@ -75,17 +81,6 @@ public class ProductService implements IProductService {
     }
 
     @Override
-    public ProductModel getProduct(String id) throws Exception {
-        ProductDAO productDao = new ProductDAO();
-        ProductModel product = productDao.getOne(id);
-        if(product == null) {
-            throw new Exception("Product does not exist!!");
-        }
-
-        return product;
-    }
-
-    @Override
     public ProductModel updateProduct(String id, ProductModel newProduct) throws Exception {
         ProductDAO productDAO = new ProductDAO();
 
@@ -97,7 +92,7 @@ public class ProductService implements IProductService {
 
         String name = newProduct.getName();
         ArrayList<String> categories = newProduct.getCategories();
-        String brand = newProduct.getBrand();
+        String brandId = newProduct.getBrandId();
         String color = newProduct.getColor();
         ArrayList<String> imageCovers = newProduct.getImageCovers();
         ArrayList<String> images = newProduct.getImages();
@@ -110,7 +105,7 @@ public class ProductService implements IProductService {
 
         product.setName(name != null ? name : product.getName());
         product.setCategories(categories != null ? categories : product.getCategories());
-        product.setBrand(brand != null ? brand : product.getBrand());
+        product.setBrandId(brandId != null ? brandId : product.getBrandId());
         product.setColor(color != null ? color : product.getColor());
         product.setImages(images != null ? images : product.getImages());
         product.setImageCovers(imageCovers != null ? imageCovers : product.getImageCovers());
@@ -136,70 +131,7 @@ public class ProductService implements IProductService {
             throw new Exception("Deletion failed!!");
         }
     }
-
-    @Override
-    public ProductModel addVariant(String id, VariantModel variant) throws Exception {
-        ProductDAO productDAO = new ProductDAO();
-        ProductModel product = productDAO.getOne(id);
-
-        if (product == null) {
-            throw new Exception("Product does not exist!!");
-        }
-
-        product.getVariants().add(variant);
-        handleProductData(product);
-        product = productDAO.updateOne(id, product);
-
-        return product;
-    }
-
-    @Override
-    public ProductModel updateVariant(String id, VariantModel variant) throws Exception {
-        ProductDAO productDAO = new ProductDAO();
-        ProductModel product = productDAO.getOne(id);
-
-        if(product == null) {
-            throw new Exception("Product does not exist!!");
-        }
-
-        for (VariantModel v : product.getVariants()) {
-            if(v.getId().equals(variant.getId())) {
-                v.setSizeId(variant.getSizeId() != null ? variant.getSizeId() : v.getSizeId());
-                v.setPrice(variant.getPrice() != -1 ? variant.getPrice() : v.getPrice());
-                v.setDiscountPrice(variant.getDiscountPrice() != -1 ? variant.getDiscountPrice() : v.getDiscountPrice());
-
-                break;
-            }
-        }
-
-        handleProductData(product);
-
-        product = productDAO.updateOne(id, product);
-
-        product.getVariants().removeIf(v -> !v.getId().equals(variant.getId()));
-
-        return product;
-    }
-
-    @Override
-    public ProductModel removeVariant(String id, String variantId) throws Exception {
-
-        if (id == null || variantId == null) {
-            throw new Exception("Invalid path!!");
-        }
-
-        ProductDAO productDAO = new ProductDAO();
-        ProductModel product = productDAO.getOne(id);
-        if (product == null) {
-            throw new Exception("Product does not exist!!");
-        }
-
-        product.getVariants().removeIf(variant -> variant.getId().equals(variantId));
-        handleProductData(product);
-
-        return productDAO.updateOne(id, product);
-    }
-
+ 
     private void handleProductData(ProductModel product) throws Exception {
         FilterDAO filterDao = new FilterDAO();
         CategoryDAO categoryDAO = new CategoryDAO();
@@ -226,12 +158,13 @@ public class ProductService implements IProductService {
         product.setFacets(new ArrayList<FilterModel>());
 
         // Xử lý brand của sản phẩm
-        FilterModel brand = filterDao.getOne(product.getBrand());
+        FilterModel brand = filterDao.getOne(product.getBrandId());
         if (brand == null) {
             throw new Exception("Brand does not exist. Please try again!!");
         }
+
         product.getFacets().add(brand);
-        product.setBrandName(brand.getName());
+        product.setBrand(brand.getName());
 
         // Xử lý color của sản phẩm
         FilterModel color = filterDao.getOne(product.getColor());
@@ -260,7 +193,7 @@ public class ProductService implements IProductService {
 
             if (variant.getId() == null) {
                 Random rand = new Random();
-                String variantId = product.getId() +  Integer.toString(rand.nextInt(1000000));
+                String variantId = product.getId() + Integer.toString(rand.nextInt(1000000));
 
                 while (productDAO.getVariant(variantId) != null) {
                     variantId = Integer.toString(rand.nextInt(1000000));
@@ -347,7 +280,9 @@ public class ProductService implements IProductService {
 
             queryFilter += " ] }";
         }
+
         BasicDBObject filters;
+
         try {
             filters = BasicDBObject.parse(queryFilter);
         } catch (Exception e) {
@@ -372,4 +307,70 @@ public class ProductService implements IProductService {
         BasicDBObject sort = BasicDBObject.parse(String.format("{ %s: %d}", sortField, sortType));
         return sort;
     }
+
+    // @Override
+    // public ProductModel addVariant(String id, VariantModel variant) throws Exception {
+    //     ProductDAO productDAO = new ProductDAO();
+    //     ProductModel product = productDAO.getOne(id);
+
+    //     if (product == null) {
+    //         throw new Exception("Product does not exist!!");
+    //     }
+
+    //     product.getVariants().add(variant);
+    //     handleProductData(product);
+    //     product = productDAO.updateOne(id, product);
+
+    //     return product;
+    // }
+
+    // @Override
+    // public ProductModel updateVariant(String id, VariantModel variant) throws Exception {
+    //     ProductDAO productDAO = new ProductDAO();
+    //     ProductModel product = productDAO.getOne(id);
+
+    //     if (product == null) {
+    //         throw new Exception("Product does not exist!!");
+    //     }
+
+    //     for (VariantModel v : product.getVariants()) {
+    //         if (v.getId().equals(variant.getId())) {
+    //             v.setSizeId(variant.getSizeId() != null ? variant.getSizeId() : v.getSizeId());
+    //             v.setPrice(variant.getPrice() != -1 ? variant.getPrice() : v.getPrice());
+    //             v.setDiscountPrice(
+    //                     variant.getDiscountPrice() != -1 ? variant.getDiscountPrice() : v.getDiscountPrice());
+
+    //             break;
+    //         }
+    //     }
+
+    //     handleProductData(product);
+
+    //     product = productDAO.updateOne(id, product);
+
+    //     product.getVariants().removeIf(v -> !v.getId().equals(variant.getId()));
+
+    //     return product;
+    // }
+
+    // @Override
+    // public ProductModel removeVariant(String id, String variantId) throws Exception {
+
+    //     if (id == null || variantId == null) {
+    //         throw new Exception("Invalid path!!");
+    //     }
+
+    //     ProductDAO productDAO = new ProductDAO();
+    //     ProductModel product = productDAO.getOne(id);
+    //     if (product == null) {
+    //         throw new Exception("Product does not exist!!");
+    //     }
+
+    //     product.getVariants().removeIf(variant -> variant.getId().equals(variantId));
+    //     handleProductData(product);
+
+    //     return productDAO.updateOne(id, product);
+    // }
+
+   
 }

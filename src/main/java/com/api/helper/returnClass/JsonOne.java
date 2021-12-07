@@ -1,5 +1,7 @@
 package com.api.helper.returnClass;
 
+import com.google.gson.Gson;
+
 public class JsonOne <Model> {
     private String status;
     private Model data;
@@ -25,4 +27,8 @@ public class JsonOne <Model> {
         this.data = data;
     }
 
+    @Override
+    public String toString() {
+        return new Gson().toJson(this).replace("\\\"", "");
+    }
 }

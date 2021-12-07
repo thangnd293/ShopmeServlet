@@ -1,6 +1,7 @@
 package com.api.helper.returnClass;
 
 import com.api.model.user.UserModel;
+import com.google.gson.Gson;
 
 public class JsonAuth {
     private String status;
@@ -37,4 +38,8 @@ public class JsonAuth {
         this.data = data;
     }
 
+    @Override
+    public String toString() {
+        return new Gson().toJson(this).replace("\\\"", "");
+    }
 }

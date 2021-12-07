@@ -14,8 +14,6 @@ import com.api.helper.HandleJson;
 import com.api.model.user.UserMapping;
 import com.api.model.user.UserModel;
 import com.api.service.auth.AuthService;
-import com.api.service.auth.IAuthService;
-import com.api.service.user.IUserService;
 import com.api.service.user.UserService;
 import com.api.utils.Email;
 import com.google.gson.JsonObject;
@@ -45,8 +43,8 @@ public class Signup extends HttpServlet {
     JsonObject data = HandleData.dataToJson(req);
 
     try {
-      IAuthService authService = new AuthService();
-      IUserService userService = new UserService();
+      AuthService authService = new AuthService();
+      UserService userService = new UserService();
 
       UserModel userSignup = UserMapping.map(data);
       UserModel user = authService.signup(userSignup);
@@ -60,14 +58,10 @@ public class Signup extends HttpServlet {
         userService.deleteUser(user.getId());
         throw new Exception("There were an error. Please try again!");
       }
-      // String token = TokenJwt.generateJwt(user);
-      // JsonAuth result = new JsonAuth(token, user);
-      // String jsonString = new Gson().toJson(result).replace("\\\"", "");
 
+      String json = String.format("{ status: %s , message: %s, email: %s }", "success" , "Please check your email to confirm your account", user.getEmail());
       
-
-      String jsonString = String.format("{ status: %s , message: %s }", "success" , "Please check your email to confirm your account");
-      HandleJson.printJson(jsonString, 200, resp);
+      HandleJson.printJson(json, 200, resp);
     } catch (Exception e) {
       HandleJson.printJsonError("fail", e.getMessage(), 404, resp);
     }

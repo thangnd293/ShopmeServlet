@@ -23,45 +23,30 @@ public class ProductDAO implements IProductDAO {
 
     @Override
     public ArrayList<ProductModel> getAll() {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public ArrayList<ProductModel> getAll(ArrayList<String> fieldLimits) {
         ArrayList<ProductModel> products = new ArrayList<ProductModel>();
-        BasicDBObject fields = new BasicDBObject();
 
-        for (String f : fieldLimits) {
-            fields.put(f, 1);
-        }
+        MongoCursor<ProductModel> cursor = productCollection.find().iterator();
 
-        MongoCursor<ProductModel> cursor = productCollection.find().projection(fields).iterator();
         while (cursor.hasNext()) {
-            products.add(cursor.next());
+            ProductModel product = cursor.next();
+            preparePrint(product);
+
+            products.add(product);
         }
         return products;
     }
 
     @Override
-    public ArrayList<ProductModel> getAll(String categoryPath, BasicDBObject filters, BasicDBObject sort,
-            ArrayList<String> fieldLimits) {
+    public ArrayList<ProductModel> getAll(String categoryPath, BasicDBObject filters, BasicDBObject sort) {
         ArrayList<ProductModel> productList = new ArrayList<ProductModel>();
 
-        BasicDBObject fields = new BasicDBObject();
-
-        for (String f : fieldLimits) {
-            fields.put(f, 1);
-        }
-
-        String queryCategory = String.format("{ \"categoryPath\" : { \"$regex\" : \"%s\"}}", categoryPath);
-        BasicDBObject query = BasicDBObject.parse(queryCategory);
-
-        MongoCursor<ProductModel> cursor = productCollection.find(query).filter(filters).sort(sort).projection(fields)
-                .iterator();
+        MongoCursor<ProductModel> cursor = productCollection.find(Filters.regex("categoryPath", categoryPath)).filter(filters).sort(sort).iterator();
 
         while (cursor.hasNext()) {
-            productList.add(cursor.next());
+            ProductModel product = cursor.next();
+            preparePrint(product);
+
+            productList.add(product);
         }
 
         return productList;
@@ -70,6 +55,7 @@ public class ProductDAO implements IProductDAO {
     @Override
     public ProductModel getOne(String id) {
         ProductModel product = productCollection.find(eq("_id", id)).first();
+
         return product;
     }
 
@@ -100,4 +86,10 @@ public class ProductDAO implements IProductDAO {
         return product;
     }
 
+    private void preparePrint(ProductModel product) {
+        product.setFacets(null);
+        product.setLongDescription(null);
+        product.setShortDescription(null);
+        product.setVariants(null);
+    }
 }

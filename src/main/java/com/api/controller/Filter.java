@@ -9,13 +9,12 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.api.helper.Check;
-import com.api.helper.HandleJson;
+import static com.api.helper.HandleJson.printJson;
+import static com.api.helper.HandleJson.printJsonError;
 import com.api.helper.returnClass.JsonMany;
 import com.api.model.facet.Facet;
 import com.api.model.filter.FilterModel;
 import com.api.service.filter.FilterService;
-import com.google.gson.Gson;
 
 @WebServlet(urlPatterns = "/api/v1/filters/*")
 public class Filter extends HttpServlet {
@@ -24,45 +23,52 @@ public class Filter extends HttpServlet {
         resp.setContentType("application/json");
 
         String pathInfo = req.getPathInfo();
-        if(pathInfo == null) {
-            FilterService filterService = new FilterService();
+
+        if (pathInfo == null) {
             try {
-            String categoryId = (String)req.getAttribute("categoryId");
-            ArrayList<Facet> facets = filterService.getFacets(categoryId);
-            JsonMany<Facet> result = new JsonMany<Facet>(facets.size(), facets);
-            String jsonString = new Gson().toJson(result).replace("\\\"", "");
-            HandleJson.printJson(jsonString, 200, resp);
+                FilterService filterService = new FilterService();
+                String categoryId = (String) req.getAttribute("categoryId");
+                String json;
+                if (categoryId == null) {
+                    ArrayList<FilterModel> tags = filterService.getTag();
+                    JsonMany<FilterModel> result = new JsonMany<FilterModel>(tags.size(), tags);
+                    json = result.toString();
+                } else {
+                    ArrayList<Facet> facets = filterService.getFacets(categoryId);
+                    JsonMany<Facet> result = new JsonMany<Facet>(facets.size(), facets);
+                    json = result.toString();
+                }
+                
+                printJson(json, 200, resp);
             } catch (Exception e) {
-                HandleJson.printJsonError("fail", e.getMessage(), 404, resp);
+                printJsonError("fail", e.getMessage(), 404, resp);
             }
-            // ArrayList<FilterModel> filters = filterService.getTopFilter();
-
-            // JsonMany<FilterModel> result = new JsonMany<FilterModel>(filters.size(), filters);
-
-            // String jsonString = new Gson().toJson(result).replace("\\\"", "");
-
-            // HandleJson.printJson(jsonString, 200, resp);
         } else {
             String[] pathParts = pathInfo.split("/");
 
-            if(pathParts.length != 2) {
-                HandleJson.printJsonError("fail", "Invalid path!!", 404, resp);
+            if (pathParts.length != 2) {
+                printJsonError("fail", "Not found", 404, resp);
             } else {
                 FilterService filterService = new FilterService();
                 String key = pathParts[1];
                 ArrayList<FilterModel> filters = new ArrayList<FilterModel>();
                 try {
-                    if(Check.isNumeric(key)) {
-                        filters = filterService.getSubFilters(key);
+                    if (key.equals("sizes")) {
+                        filters = filterService.getSize();
+                    } else if (key.equals("colors")) {
+                        filters = filterService.getColor();
+                    } else if (key.equals("brands")) {
+                        filters = filterService.getBrand();
                     } else {
-                        filters = filterService.getSubFiltersByType(pathParts[1]);
+                        throw new Exception("Not found");
                     }
+
+                    JsonMany<FilterModel> result = new JsonMany<FilterModel>(filters.size(), filters);
+                    String json = result.toString();
+                    printJson(json, 200, resp);
                 } catch (Exception e) {
-                    HandleJson.printJsonError("fail", "Invalid filter!!", 404, resp);
-                }           
-                JsonMany<FilterModel> result = new JsonMany<FilterModel>(filters.size(), filters);
-                String jsonString = new Gson().toJson(result).replace("\\\"", "");
-                 HandleJson.printJson(jsonString, 200, resp);          
+                    printJsonError("fail", e.getMessage(), 404, resp);
+                }
             }
         }
     }

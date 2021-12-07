@@ -1,5 +1,7 @@
 package com.api.helper.returnClass;
 
+import com.google.gson.Gson;
+
 public class JsonError {
     private String status;
     private String message;
@@ -30,4 +32,8 @@ public class JsonError {
         this.message = message;
     }
 
+    @Override
+    public String toString() {
+        return new Gson().toJson(this).replace("\\\"", "");
+    }
 }

@@ -7,22 +7,25 @@ import org.bson.types.ObjectId;
 
 public class BillModel {
     private ObjectId user;
-    private ShippingAddressModel shippingAdress;
+    private String userId;
+    private ShippingAddressModel shippingAddress;
     private ArrayList<ItemModel> items;
     private int quantity;
     private double amount;
     private Date createAt;
 
-    public BillModel(ObjectId user, ShippingAddressModel shippingAdress, ArrayList<ItemModel> items, int quantity, double amount, Date createAt) {
+    public BillModel(ObjectId user, ShippingAddressModel shippingAddress, ArrayList<ItemModel> items, int quantity,
+            double amount, Date createAt) {
         this.user = user;
-        this.shippingAdress = shippingAdress;
+        this.shippingAddress = shippingAddress;
         this.items = items;
         this.quantity = quantity;
         this.amount = amount;
         this.createAt = createAt;
     }
 
-    public BillModel() {};
+    public BillModel() {
+    };
 
     public ObjectId getUser() {
         return user;
@@ -32,12 +35,12 @@ public class BillModel {
         this.user = user;
     }
 
-    public ShippingAddressModel getShippingAdress() {
-        return shippingAdress;
+    public ShippingAddressModel getShippingAddress() {
+        return shippingAddress;
     }
 
-    public void setShippingAdress(ShippingAddressModel shippingAdress) {
-        this.shippingAdress = shippingAdress;
+    public void setShippingAddress(ShippingAddressModel shippingAddress) {
+        this.shippingAddress = shippingAddress;
     }
 
     public ArrayList<ItemModel> getItems() {
@@ -71,4 +74,13 @@ public class BillModel {
     public void setCreateAt(Date createAt) {
         this.createAt = createAt;
     }
+
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
+
 }

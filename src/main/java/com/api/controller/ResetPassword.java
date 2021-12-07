@@ -9,13 +9,12 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.api.helper.HandleData;
-import com.api.helper.HandleJson;
+import static com.api.helper.HandleJson.printJson;
+import static com.api.helper.HandleJson.printJsonError;
 import com.api.helper.TokenJwt;
 import com.api.helper.returnClass.JsonAuth;
 import com.api.model.user.UserModel;
 import com.api.service.auth.AuthService;
-import com.api.service.auth.IAuthService;
-import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
 @WebServlet(urlPatterns = "/api/v1/reset-password")
@@ -29,15 +28,15 @@ public class ResetPassword extends HttpServlet {
         String password = data.get("password") != null ? data.get("password").getAsString() : null;
         String passwordConfirm = data.get("passwordConfirm") != null ? data.get("passwordConfirm").getAsString() : null;
         try {
-            IAuthService authService = new AuthService();
+            AuthService authService = new AuthService();
             UserModel user = authService.resetPassword(email, resetCode, password, passwordConfirm);
 
             String token = TokenJwt.generateJwt(user);
             JsonAuth result = new JsonAuth(token, user);
-            String jsonString = new Gson().toJson(result).replace("\\\"", "");
-            HandleJson.printJson(jsonString, 200, resp);
+            String json = result.toString();
+            printJson(json, 200, resp);
         } catch (Exception e) {
-            HandleJson.printJsonError("fail", e.getMessage(), 404, resp);
+            printJsonError("fail", e.getMessage(), 404, resp);
         }
     }
 }

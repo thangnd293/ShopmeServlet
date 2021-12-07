@@ -9,7 +9,7 @@ public interface ICartService {
 
     CartModel addToCart(String userId, String productVariantion, int quantity) throws Exception;
 
-    CartModel updateCart(String userId, String productVariantion, int quantity) throws Exception;
+    CartModel updateItem(String userId, String productVariantion, int quantity) throws Exception;
 
     CartModel removeItem(String userId, String productVariantion) throws Exception;
 }

@@ -60,7 +60,7 @@ public class UserDAO implements IUserDAO {
 
   @Override
   public Boolean deleteOne(ObjectId id) {
-    return userCollection.deleteOne(eq("id", id)).getDeletedCount() != 0;
+    return userCollection.deleteOne(eq("_id", id)).getDeletedCount() != 0;
   }
 
   @Override

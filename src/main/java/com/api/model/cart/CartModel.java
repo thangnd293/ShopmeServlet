@@ -4,7 +4,6 @@ import java.util.ArrayList;
 
 import org.bson.types.ObjectId;
 
-
 public class CartModel {
     private ObjectId id;
     private ObjectId user;

@@ -9,14 +9,13 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.api.helper.HandleData;
-import com.api.helper.HandleJson;
+import static com.api.helper.HandleJson.printJson;
+import static com.api.helper.HandleJson.printJsonError;
 import com.api.helper.TokenJwt;
 import com.api.helper.returnClass.JsonAuth;
 import com.api.model.user.UserMapping;
 import com.api.model.user.UserModel;
 import com.api.service.auth.AuthService;
-import com.api.service.auth.IAuthService;
-import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
 @WebServlet(urlPatterns = "/api/v1/login")
@@ -28,16 +27,16 @@ public class Login extends HttpServlet {
     try {
       JsonObject data = HandleData.dataToJson(req);
       UserModel userLogin = UserMapping.map(data);
-      IAuthService userService = new AuthService();
+      AuthService userService = new AuthService();
 
       UserModel user = userService.login(userLogin);
 
       String token = TokenJwt.generateJwt(user);
       JsonAuth result = new JsonAuth(token, user);
-      String jsonString = new Gson().toJson(result).replace("\\\"", "");
-      HandleJson.printJson(jsonString, 200, resp);
+      String json = result.toString();
+      printJson(json, 200, resp);
     } catch (Exception e) {
-      HandleJson.printJsonError("fail", e.getMessage(), 404, resp);
+      printJsonError("fail", e.getMessage(), 404, resp);
     }
   }
 }

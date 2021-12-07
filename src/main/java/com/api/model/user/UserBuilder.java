@@ -14,6 +14,7 @@ public class UserBuilder implements IMongoBuilder<UserBuilder>, IUserBuilder {
   private String passwordConfirm;
   private String phoneNumber;
   private String photo;
+
   @Override
   public UserBuilder addId(ObjectId id) {
     this.id = id;

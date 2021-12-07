@@ -2,13 +2,17 @@ package com.api.model.cart;
 
 import com.api.model.product.ProductModel;
 
+import org.bson.types.ObjectId;
+
 public class LineItem {
+    private ObjectId id; 
     private String variantId;
     private int quantity;
     private ProductModel product;
     private double total;
     
-    public LineItem(String variantId, int quantity, double total, ProductModel product) {
+    public LineItem(ObjectId id, String variantId, int quantity, double total, ProductModel product) {
+        this.id = id;
         this.variantId = variantId;
         this.quantity = quantity;
         this.product = product;
@@ -17,14 +21,6 @@ public class LineItem {
 
     public LineItem() {};
     
-    public String getVariantId() {
-        return variantId;
-    }
-
-    public void setVariantId(String variantId) {
-        this.variantId = variantId;
-    }
-
     public int getQuantity() {
         return quantity;
     }
@@ -47,6 +43,22 @@ public class LineItem {
     
     public void setTotal(double total) {
         this.total = total;
+    }
+
+    public ObjectId getId() {
+        return id;
+    }
+
+    public void setId(ObjectId id) {
+        this.id = id;
+    }
+
+    public String getVariantId() {
+        return variantId;
+    }
+
+    public void setVariantId(String variantId) {
+        this.variantId = variantId;
     }
 
 }

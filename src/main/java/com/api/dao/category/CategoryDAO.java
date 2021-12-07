@@ -8,31 +8,20 @@ import com.api.model.category.CategoryModel;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
 
-import com.mongodb.client.model.Filters;
+import static com.mongodb.client.model.Filters.eq;
 
-import org.bson.conversions.Bson;
 
 public class CategoryDAO implements ICategoryDAO {
     private MongoCollection<CategoryModel> categoryCollection = new DatabaseConnect().getCollection("category", CategoryModel.class);
 
     @Override
-    public CategoryModel addCategory(CategoryModel category) {
-        categoryCollection.insertOne(category);
-        return category;
-    }
-
-    @Override
     public CategoryModel getOne(String id){
-        CategoryModel category = categoryCollection.find(Filters.eq("_id", id)).first();      
+        CategoryModel category = categoryCollection.find(eq("_id", id)).first();      
         return category;
     }
 
-    private Bson eq(String string, String id) {
-        return null;
-    }
-
     @Override
-    public ArrayList<CategoryModel> getSubCategoriesByParent(String parent) {
+    public ArrayList<CategoryModel> getAll(String parent) {
         ArrayList<CategoryModel> categoryList = new ArrayList<CategoryModel>();
 
         MongoCursor<CategoryModel> cursor = categoryCollection.find(eq("parent", parent)).iterator();
@@ -45,7 +34,7 @@ public class CategoryDAO implements ICategoryDAO {
     }
 
     @Override
-    public ArrayList<CategoryModel> getAllCategories() {
+    public ArrayList<CategoryModel> getAll() {
         ArrayList<CategoryModel> categoryList = new ArrayList<CategoryModel>();
 
         Consumer<CategoryModel> addCategory = new Consumer<CategoryModel>() {

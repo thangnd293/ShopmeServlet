@@ -11,7 +11,7 @@ public class UserModel {
   }
 
   private ObjectId id;
-  private String idString;
+  private String _id;
   private String fname;
   private String lname;
   private String email;
@@ -26,6 +26,7 @@ public class UserModel {
   private Date changePasswordAt;
   private String passwordResetCode;
   private Date passwordResetExpires;
+  private Date createAt;
 
   public UserModel(ObjectId id, String fname, String lname, String email, String password, String passwordConfirm,
       String phoneNumber, String photo) {
@@ -148,11 +149,11 @@ public class UserModel {
   }
 
   public String get_id() {
-    return idString;
+    return _id;
   }
 
-  public void set_id(String idString) {
-    this.idString = idString;
+  public void set_id(String _id) {
+    this._id = _id;
   }
 
   public String getVerifyCode() {
@@ -169,6 +170,14 @@ public class UserModel {
 
   public void setVerifyExpireAt(Date verifyExpireAt) {
     this.verifyExpireAt = verifyExpireAt;
+  }
+
+  public Date getCreateAt() {
+    return createAt;
+  }
+
+  public void setCreateAt(Date createAt) {
+    this.createAt = createAt;
   }
 
 }

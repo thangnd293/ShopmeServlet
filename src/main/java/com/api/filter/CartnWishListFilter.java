@@ -18,7 +18,7 @@ import org.json.JSONObject;
 
 import io.jsonwebtoken.Claims;
 
-@WebFilter(urlPatterns = { "/api/v1/cart/*", "/api/v1/wishlist/*" })
+@WebFilter(urlPatterns = { "/api/v1/cart/*", "/api/v1/wishlist/*", "/api/v1/bill/*" })
 public class CartnWishListFilter implements Filter {
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)

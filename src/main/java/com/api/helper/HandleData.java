@@ -21,12 +21,6 @@ public class HandleData {
 
     JsonObject json = new Gson().fromJson(body, JsonObject.class);
 
-    // String parts = body.substring(1, body.length() - 1).replace("\"", "");
-    // for (String part : parts.split(",")) {
-    //   String[] keyVal = part.split(":");
-    //   json.addProperty(keyVal[0].trim(), keyVal[1].trim());
-    // }
-
     return json;
   }
 

@@ -11,11 +11,11 @@ public final class Check {
     }
 
     public static boolean isFname(String str) {
-        return str.length() >= 1 && str.matches("[a-zA-Z ]+");
+        return str.length() >= 1 && str.matches("[a-zA-Z]+");
     }
 
     public static boolean isLname(String str) {
-        return str.length() >= 1 && str.matches("[a-zA-Z]+");
+        return str.length() >= 1 && str.matches("[a-zA-Z ]+");
     }
 
     public static boolean isValidPassword(String str) {

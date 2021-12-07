@@ -6,7 +6,6 @@ import java.io.PrintWriter;
 import javax.servlet.http.HttpServletResponse;
 
 import com.api.helper.returnClass.JsonError;
-import com.google.gson.Gson;
 
 import org.json.JSONObject;
 
@@ -27,9 +26,9 @@ public class HandleJson {
             throws IOException {
         JsonError result = new JsonError(status, message);
 
-        String jsonString = new Gson().toJson(result).replace("\\\"", "");
+        String json = result.toString();
 
-        JSONObject jsonCategories = new JSONObject(jsonString);
+        JSONObject jsonCategories = new JSONObject(json);
 
         resp.setStatus(statusCode);
         PrintWriter pw = resp.getWriter();

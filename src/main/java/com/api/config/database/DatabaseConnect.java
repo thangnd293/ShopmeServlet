@@ -21,6 +21,7 @@ import static org.bson.codecs.configuration.CodecRegistries.fromRegistries;
 
 import java.util.concurrent.TimeUnit;
 
+
 public class DatabaseConnect implements IDatabase {
   private MongoClient mongoClient;
   private CodecRegistry pojoCodecRegistry;
@@ -59,4 +60,5 @@ public class DatabaseConnect implements IDatabase {
   public <Model> MongoCollection<Model> getCollection(String name, Class<Model> type) {
     return dataBase.getCollection(name, type);
   }
+  
 }

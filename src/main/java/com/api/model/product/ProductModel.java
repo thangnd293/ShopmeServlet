@@ -16,8 +16,8 @@ public class ProductModel {
     private String longDescription;
     private String shortDescription;
     private String color;
+    private String brandId;
     private String brand;
-    private String brandName;
     private ArrayList<String> filters;
     private ArrayList<FilterModel> facets;
     private double price;
@@ -27,12 +27,12 @@ public class ProductModel {
     private Boolean isFeatured;
     private ArrayList<VariantModel> variants;
 
-    public ProductModel(String id, String name, ArrayList<String> categories, String categoryPath, double price, double discountPrice, ArrayList<String> imageCovers, ArrayList<String> images, String longDescription, String shortDescription, String color, String brand, String brandName, String slug, Boolean isFeatured, ArrayList<String> filters, ArrayList<FilterModel> facets, Date createAt, ArrayList<VariantModel> variants) {
+    public ProductModel(String id, String name, ArrayList<String> categories, String categoryPath, double price, double discountPrice, ArrayList<String> imageCovers, ArrayList<String> images, String longDescription, String shortDescription, String color, String brandId, String brand, String slug, Boolean isFeatured, ArrayList<String> filters, ArrayList<FilterModel> facets, Date createAt, ArrayList<VariantModel> variants) {
         
         this.id = id;
         this.name = name;
         this.categories = categories;
-        this.brand = brand;
+        this.brandId = brandId;
         this.price = price;
         this.discountPrice = discountPrice;
         this.imageCovers = imageCovers;
@@ -189,12 +189,12 @@ public class ProductModel {
         this.facets = facets;
     }
 
-    public String getBrandName() {
-        return brandName;
+    public String getBrandId() {
+        return brandId;
     }
 
-    public void setBrandName(String brandName) {
-        this.brandName = brandName;
+    public void setBrandId(String brandId) {
+        this.brandId = brandId;
     }
 
     public ArrayList<VariantModel> getVariants() {

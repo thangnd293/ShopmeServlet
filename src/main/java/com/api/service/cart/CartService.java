@@ -22,12 +22,15 @@ public class CartService implements ICartService {
 
     @Override
     public CartModel getCart(String userId) throws Exception {
+        if(userId == null) {
+            throw new Exception("User does not exists");
+        }
+
         CartDAO cartDAO = new CartDAO();
         CartModel cart = cartDAO.getOne(userId);
         if (cart == null) {
-            CartModel newCart = new CartModel(new ObjectId(userId), new ArrayList<LineItem>(), 0, 0);
-            cartDAO.addOne(newCart);
-            return newCart;
+            cart = new CartModel(new ObjectId(userId), new ArrayList<LineItem>(), 0, 0);
+            cartDAO.addOne(cart);
         }
 
         return cart;
@@ -35,10 +38,16 @@ public class CartService implements ICartService {
 
     @Override
     public CartModel addToCart(String userId, String productVariantion, int quantity) throws Exception {
+        if(userId == null) {
+            throw new Exception("User does not exists");
+        }
+
         CartModel cart = getCart(userId);
         boolean flag = false;
         for (LineItem item : cart.getItems()) {
-            if (item.getVariantId().equals(productVariantion)) {
+            String variantId = item.getVariantId();
+
+            if (variantId.equals(productVariantion)) {
                 item.setQuantity(item.getQuantity() + quantity);
                 flag = true;
                 break;
@@ -46,9 +55,10 @@ public class CartService implements ICartService {
         }
 
         if (!flag) {
-            LineItem item = new LineItem(productVariantion, quantity, 0, null);
+            LineItem item = new LineItem(null, productVariantion, quantity, 0, null);
             cart.getItems().add(item);
         }
+
         handleCartData(cart);
         CartDAO cartDAO = new CartDAO();
         cart = cartDAO.updateOne(cart);
@@ -56,11 +66,17 @@ public class CartService implements ICartService {
     }
 
     @Override
-    public CartModel updateCart(String userId, String productVariantion, int quantity) throws Exception {
+    public CartModel updateItem(String userId, String productVariantion, int quantity) throws Exception {
+        if(userId == null) {
+            throw new Exception("User does not exists");
+        }
+
         CartModel cart = getCart(userId);
         boolean isCartChange = false;
         for (LineItem item : cart.getItems()) {
-            if (item.getVariantId().equals(productVariantion)) {
+            String variantId = item.getVariantId();
+
+            if (variantId.equals(productVariantion)) {
                 item.setQuantity(quantity);
                 isCartChange = true;
                 break;
@@ -77,6 +93,10 @@ public class CartService implements ICartService {
 
     @Override
     public CartModel removeItem(String userId, String productVariantion) throws Exception {
+        if(userId == null) {
+            throw new Exception("User does not exists");
+        }
+        
         CartModel cart = getCart(userId);
         int oldLength = cart.getItems().size();
 
@@ -99,7 +119,9 @@ public class CartService implements ICartService {
         int n = cart.getItems().size();
         for (int i = 0; i < n; i++) {
             LineItem item = cart.getItems().get(i);
-            ProductModel product = variantService.getVariant(item.getVariantId());
+            String variantId = item.getVariantId();
+
+            ProductModel product = variantService.getVariant(variantId);
 
             if (product == null) {
                 cart.getItems().remove(i);

@@ -1,6 +1,5 @@
 package com.api.service.auth;
 
-import java.time.LocalDateTime;
 import java.util.Date;
 
 import com.api.dao.user.IUserDAO;
@@ -15,28 +14,29 @@ import com.mongodb.BasicDBObject;
 public class AuthService implements IAuthService {
   @Override
   public UserModel login(UserModel userLogin) throws Exception {
+    String email = userLogin.getEmail();
+    String password = userLogin.getPassword();
 
-    if (userLogin.getEmail() == null || userLogin.getPassword() == null) {
+    if (email == null || password == null) {
       throw new Exception("Please provide email and password!!");
     }
 
     IUserDAO userDAO = new UserDAO();
-    UserModel user = userDAO.getOne(userLogin.getEmail());
-    boolean checkUserIsNull = user == null;
+    UserModel user = userDAO.getOne(email);
+    boolean checkUserInvalid = user == null || user.isIsVerify() == false;
 
-    if (checkUserIsNull) {
+    if (checkUserInvalid) {
       throw new Exception("Incorrect email or password!!");
     }
 
     String realPass = Encryption.decrypt(user.getPassword(), Encryption.key());
 
-    boolean checkPasswordIsTrue = userLogin.getPassword().equals(realPass);
+    boolean checkPasswordIsTrue = password.equals(realPass);
     if (!checkPasswordIsTrue) {
       throw new Exception("Incorrect email or password!!");
     }
-    user.setPassword(null);
-    user.setPasswordConfirm(null);
-    user.setRole(null);
+
+    preparePrintUser(user);
     return user;
   }
 
@@ -81,12 +81,13 @@ public class AuthService implements IAuthService {
     }
 
     userSignup.setRole(Role.USER);
-
+    userSignup.setIsVerify(false);
+    
     IUserDAO userDAO = new UserDAO();
     UserModel user = userDAO.getOne(userSignup.getEmail());
     boolean checkIsUserExists = user != null;
     if (checkIsUserExists) {
-      if (user.isIsVerify() == false || user.isIsVerify() == null) {
+      if (user.isIsVerify() == false) {
         userDAO.deleteOne(user.getId());
       } else {
         throw new Exception("Email already exists, please use another email");
@@ -99,6 +100,7 @@ public class AuthService implements IAuthService {
     String verifyCode = Common.getRandom();
     userSignup.setVerifyCode(verifyCode);
     userSignup.setVerifyExpireAt(new Date());
+    
     return userDAO.addOne(userSignup);
   }
 
@@ -118,13 +120,7 @@ public class AuthService implements IAuthService {
     user.setVerifyCode(null);
 
     user = userDAO.updateOne(user.getId(), user);
-    user.set_id(user.getId().toString());
-    user.setIsVerify(null);
-    user.setPassword(null);
-    user.setPasswordConfirm(null);
-    user.setPasswordResetExpires(null);
-    user.setPasswordResetCode(null);
-    user.setRole(null);
+    preparePrintUser(user);
 
     return user;
   }
@@ -144,7 +140,8 @@ public class AuthService implements IAuthService {
     String resetCodeHash = Encryption.encrypt(resetCode, Encryption.key());
 
     user.setPasswordResetCode(resetCodeHash);
-    user.setPasswordResetExpires(Common.toDate(LocalDateTime.now().plusMinutes(5)));
+    Date date = new Date(new Date().getTime() + 1 * 60 * 1000);
+    user.setPasswordResetExpires(date);
     userDAO.updateOne(user.getId(), user);
     return resetCode;
   }
@@ -158,18 +155,18 @@ public class AuthService implements IAuthService {
 
     UserDAO userDAO = new UserDAO();
     
-    String query = String.format("{ \"email\": \"%s\"}", email);
+    String query = String.format("{ \"email\": \"%s\"}", email, resetCode);
     BasicDBObject filter = BasicDBObject.parse(query);
     UserModel user = userDAO.getOne(filter);
 
     if (user == null || new Date().after(user.getPasswordResetExpires())) {
-      throw new Exception("Verify failed. Please try again");
+      throw new Exception("Reset password code incorrect. Please try again");
     }
 
     String realResetCode = Encryption.decrypt(user.getPasswordResetCode(), Encryption.key());
 
     if(!realResetCode.equals(resetCode)) {
-      throw new Exception("Verify failed. Please try again");
+      throw new Exception("Reset password code incorrect. Please try again");
     }
 
     boolean checkIsValidPassword = Check.isValidPassword(password);
@@ -182,6 +179,7 @@ public class AuthService implements IAuthService {
     if (!checkIsPasswordSame) {
       throw new Exception("Password must be the same!!");
     }
+
     String passwordHash = Encryption.encrypt(password, Encryption.key());
 
     user.setPassword(passwordHash);
@@ -191,11 +189,18 @@ public class AuthService implements IAuthService {
     user.setPasswordResetExpires(null);
     user = userDAO.updateOne(user.getId(), user);
 
+    preparePrintUser(user);
+    return user;
+  }
+
+  private void preparePrintUser(UserModel user) {
     user.set_id(user.getId().toString());
     user.setIsVerify(null);
     user.setPassword(null);
+    user.setPasswordConfirm(null);
+    user.setPasswordResetExpires(null);
+    user.setPasswordResetCode(null);
     user.setRole(null);
-
-    return user;
+    user.setId(null);
   }
 }

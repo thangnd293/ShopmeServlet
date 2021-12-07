@@ -2,6 +2,8 @@ package com.api.helper.returnClass;
 
 import java.util.ArrayList;
 
+import com.google.gson.Gson;
+
 public class JsonMany <Model> {
     private String status;
     private int result;
@@ -43,4 +45,8 @@ public class JsonMany <Model> {
         this.data = data;
     }
 
+    @Override
+    public String toString() {
+        return new Gson().toJson(this).replace("\\\"", "");
+    }
 }

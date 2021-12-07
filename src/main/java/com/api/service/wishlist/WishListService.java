@@ -10,6 +10,10 @@ import org.bson.types.ObjectId;
 public class WishListService implements IWishListService {
     @Override
     public WishlistModel getWishList(String userId) throws Exception {
+        if (userId == null) {
+            throw new Exception("Product does not exist!!");
+        }
+
         WishListDAO wishListDAO = new WishListDAO();
         WishlistModel wishList = wishListDAO.getOne(new ObjectId(userId));
         return wishList;
@@ -17,7 +21,7 @@ public class WishListService implements IWishListService {
 
     @Override
     public WishlistModel toggleItem(String userId, String productId) throws Exception {
-        if(productId == null) {
+        if (productId == null || userId == null) {
             throw new Exception("Product does not exist!!");
         }
 
@@ -25,7 +29,7 @@ public class WishListService implements IWishListService {
 
         boolean isRemove = wishList.getProducts().removeIf(product -> product.getId().equals(productId));
 
-        if(!isRemove) {
+        if (!isRemove) {
             ProductService productService = new ProductService();
             ProductModel product = productService.getProduct(productId);
             wishList.getProducts().add(product);
@@ -33,6 +37,7 @@ public class WishListService implements IWishListService {
 
         WishListDAO wishListDAO = new WishListDAO();
         wishList = wishListDAO.updateOne(wishList.getId(), wishList);
+
         return wishList;
     }
 }

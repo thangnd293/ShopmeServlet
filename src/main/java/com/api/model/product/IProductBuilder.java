@@ -13,7 +13,7 @@ public interface IProductBuilder {
     
     ProductBuilder addName(String name);
 
-    ProductBuilder addBrand(String brand);
+    ProductBuilder addBrandId(String brandId);
 
     ProductBuilder addBrandName(String brandName);
 
