@@ -9,47 +9,24 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.annotation.WebFilter;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
-import com.api.helper.TokenJwt;
-
-import org.json.JSONObject;
-
-import io.jsonwebtoken.Claims;
-
-@WebFilter(urlPatterns = { "/api/v1/user/*" })
+import com.api.helper.Check;
+import static com.api.helper.HandleJson.printJsonError;
+@WebFilter(urlPatterns = { "/api/v1/user/*", "/api/v1/cart/*", "/api/v1/wishlist/*", "/api/v1/bill/*", "/api/v1/dashboard" })
 public class AuthFilter implements Filter {
   @Override
   public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
       throws IOException, ServletException {
-    HttpServletRequest httpServletRequest = (HttpServletRequest) request;
-
-    String jwt = httpServletRequest.getHeader("Authorization");
-    System.out.println("Authorization: " + jwt);
-
-    boolean checkJwtIsNull = jwt == null;
-    if (checkJwtIsNull) {
-      throw new IOException("Requires login to authenticate user");
-    }
+    HttpServletRequest req = (HttpServletRequest) request;
+    HttpServletResponse resp = (HttpServletResponse) response;
 
     try {
-    Claims claims = TokenJwt.checkJwt(jwt);
-
-    JSONObject userJson = this.handleData(claims);
-    request.setAttribute("user", userJson);
-
-    chain.doFilter(request, response);
+      Check.checkLogged(req); 
+      chain.doFilter(request, response);
     } catch (Exception e) {
-    throw new IOException("Incorrect or expired token");
+      resp.setContentType("application/json");
+      printJsonError("fail", e.getMessage(), 403, resp);
     }
-  }
-
-  private JSONObject handleData(Claims claims) {
-    JSONObject userJson = new JSONObject();
-    claims.forEach((key, value) -> {
-      String val = value.toString().replace("\"", "");
-      userJson.put(key, val);
-    });
-
-    return userJson;
   }
 }

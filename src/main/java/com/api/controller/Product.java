@@ -17,7 +17,6 @@ import com.api.helper.returnClass.JsonMany;
 import com.api.helper.returnClass.JsonOne;
 import com.api.model.product.ProductMapping;
 import com.api.model.product.ProductModel;
-import com.api.service.product.IProductService;
 import com.api.service.product.ProductService;
 import com.google.gson.JsonObject;
 
@@ -52,9 +51,23 @@ public class Product extends HttpServlet {
         // Chia ra nhiều trường hợp
         else {
             String[] pathParts = pathInfo.split("/");
+            
+            // /api/v1/product/features
+            if (pathParts.length == 2 && pathParts[1].equals("features")) {
+                ProductService productService = new ProductService();
+                try {
+                    ArrayList<ProductModel> products = productService.getProductFeatures();
+
+                    JsonMany<ProductModel> result = new JsonMany<ProductModel>(products.size(), products);
+                    String json = result.toString();
+                    printJson(json, 200, resp);
+                } catch (Exception e) {
+                    printJsonError("fail", e.getMessage(), 404, resp);
+                }
+            }
             // /api/v1/product/:id
-            if (pathParts.length == 2) {
-                IProductService productService = new ProductService();
+            else if (pathParts.length == 2) {
+                ProductService productService = new ProductService();
                 try {
                     ProductModel product = productService.getProduct(pathParts[1]);
 
@@ -65,7 +78,8 @@ public class Product extends HttpServlet {
                 } catch (Exception e) {
                     printJsonError("fail", e.getMessage(), 404, resp);
                 }
-            } else {
+            } 
+            else {
                 printJsonError("fail", "Not found", 404, resp);
             }
         }
@@ -123,6 +137,7 @@ public class Product extends HttpServlet {
     @Override
     protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         resp.setContentType("application/json");
+
         String pathInfo = req.getPathInfo();
 
         if (pathInfo == null) {
@@ -147,15 +162,6 @@ public class Product extends HttpServlet {
             } else {
                 printJsonError("fail", "Not found", 404, resp);
             }
-            // else if (pathParts.length == 4 && Check.isNumeric(pathParts[1]) &&
-            // pathParts[2].equals("variants")
-            // && Check.isNumeric(pathParts[3])) {
-            // req.setAttribute("productId", pathParts[1]);
-            // req.setAttribute("variantId", pathParts[3]);
-
-            // this.getServletContext().getRequestDispatcher("/api/v1/variants").forward(req,
-            // resp);
-            // }
         }
 
     }

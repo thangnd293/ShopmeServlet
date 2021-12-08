@@ -57,6 +57,18 @@ public class ProductService implements IProductService {
     }
 
     @Override
+    public ArrayList<ProductModel> getProductFeatures() {
+        ProductDAO productDao = new ProductDAO();
+
+        ArrayList<ProductModel> productList = new ArrayList<ProductModel>();
+        BasicDBObject filter = new BasicDBObject("isFeatured", true);
+        BasicDBObject sort = new BasicDBObject("createAt", -1);
+        productList = productDao.getAll("/", filter, sort);
+        
+        return productList;
+    }
+
+    @Override
     public ProductModel addProduct(ProductModel product) throws Exception {
 
         if (product.getCategories() == null || product.getBrandId() == null || product.getImageCovers() == null

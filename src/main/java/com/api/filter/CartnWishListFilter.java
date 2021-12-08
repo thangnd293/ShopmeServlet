@@ -7,7 +7,6 @@ import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
-import javax.servlet.annotation.WebFilter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -18,7 +17,7 @@ import org.json.JSONObject;
 
 import io.jsonwebtoken.Claims;
 
-@WebFilter(urlPatterns = { "/api/v1/cart/*", "/api/v1/wishlist/*", "/api/v1/bill/*" })
+// @WebFilter(urlPatterns = { "/api/v1/cart/*", "/api/v1/wishlist/*", "/api/v1/bill/*" })
 public class CartnWishListFilter implements Filter {
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)

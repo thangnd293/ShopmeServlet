@@ -90,6 +90,5 @@ public class ProductDAO implements IProductDAO {
         product.setFacets(null);
         product.setLongDescription(null);
         product.setShortDescription(null);
-        product.setVariants(null);
     }
 }

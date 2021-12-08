@@ -2,8 +2,10 @@ package com.api.dao.cart;
 
 import com.api.model.cart.CartModel;
 
+import org.bson.types.ObjectId;
+
 public interface ICartDAO {
-    CartModel getOne(String userId);
+    CartModel getOne(ObjectId userId);
 
     CartModel addOne(CartModel cart);
 

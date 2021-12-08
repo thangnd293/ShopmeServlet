@@ -9,6 +9,7 @@ import com.api.helper.Common;
 import com.api.helper.Encryption;
 import com.api.model.user.UserModel;
 import com.api.model.user.UserModel.Role;
+import com.api.service.user.UserService;
 import com.mongodb.BasicDBObject;
 
 public class AuthService implements IAuthService {
@@ -36,7 +37,7 @@ public class AuthService implements IAuthService {
       throw new Exception("Incorrect email or password!!");
     }
 
-    preparePrintUser(user);
+    UserService.preparePrintUser(user);
     return user;
   }
 
@@ -120,7 +121,7 @@ public class AuthService implements IAuthService {
     user.setVerifyCode(null);
 
     user = userDAO.updateOne(user.getId(), user);
-    preparePrintUser(user);
+    UserService.preparePrintUser(user);
 
     return user;
   }
@@ -189,18 +190,9 @@ public class AuthService implements IAuthService {
     user.setPasswordResetExpires(null);
     user = userDAO.updateOne(user.getId(), user);
 
-    preparePrintUser(user);
+    UserService.preparePrintUser(user);
     return user;
   }
 
-  private void preparePrintUser(UserModel user) {
-    user.set_id(user.getId().toString());
-    user.setIsVerify(null);
-    user.setPassword(null);
-    user.setPasswordConfirm(null);
-    user.setPasswordResetExpires(null);
-    user.setPasswordResetCode(null);
-    user.setRole(null);
-    user.setId(null);
-  }
+
 }

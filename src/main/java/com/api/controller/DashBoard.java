@@ -11,8 +11,10 @@ import javax.servlet.http.HttpServletResponse;
 import static com.api.helper.HandleJson.printJson;
 import static com.api.helper.HandleJson.printJsonError;
 
+import com.api.helper.Check;
 import com.api.helper.returnClass.JsonOne;
 import com.api.model.dashboard.DashBoardModel;
+import com.api.model.user.UserModel;
 import com.api.service.dashboard.DashBoardService;
 
 @WebServlet(urlPatterns = "/api/v1/dashboard")
@@ -22,6 +24,13 @@ public class DashBoard extends HttpServlet {
         resp.setContentType("application/json");
 
         try {
+
+            UserModel user = (UserModel) req.getAttribute("user");
+
+            if (!Check.isAdmin(user)) {
+                throw new Exception("You do not have permission");
+            }
+
             DashBoardService dashBoardService = new DashBoardService();
             DashBoardModel dashBoard = dashBoardService.getDashBoard();
             JsonOne<DashBoardModel> result = new JsonOne<DashBoardModel>(dashBoard);

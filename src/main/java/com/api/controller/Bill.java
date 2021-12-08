@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.api.helper.Check;
 import com.api.helper.HandleData;
 import com.api.helper.returnClass.JsonMany;
 import com.api.helper.returnClass.JsonOne;
@@ -17,9 +18,9 @@ import static com.api.helper.HandleJson.printJson;
 import static com.api.helper.HandleJson.printJsonError;
 import com.api.model.bill.BillMapping;
 import com.api.model.bill.BillModel;
+import com.api.model.user.UserModel;
 import com.api.service.bill.BillService;
 import com.google.gson.JsonObject;
-import org.bson.types.ObjectId;
 
 @WebServlet(urlPatterns = "/api/v1/bill/*")
 public class Bill extends HttpServlet {
@@ -29,21 +30,36 @@ public class Bill extends HttpServlet {
         resp.setContentType("application/json");
         String pathInfo = req.getPathInfo();
 
+        // api/v1/bill
+        // Admin lay tat ca bill
         if (pathInfo == null) {
-            BillService billService = new BillService();
-            ArrayList<BillModel> bills = billService.getAll();
-            JsonMany<BillModel> result = new JsonMany<BillModel>(bills.size(), bills);
+            try {
+                UserModel user = (UserModel) req.getAttribute("user");
 
-            String json = result.toString();
-            printJson(json, 200, resp);
+                if (!Check.isAdmin(user)) {
+                    throw new Exception("You do not have permission");
+                }
+
+                BillService billService = new BillService();
+                ArrayList<BillModel> bills = billService.getAll();
+                JsonMany<BillModel> result = new JsonMany<BillModel>(bills.size(), bills);
+
+                String json = result.toString();
+                printJson(json, 200, resp);
+            } catch (Exception e) {
+                printJsonError("fail", e.getMessage(), 404, resp);
+            }
+
         } else {
             String[] pathParts = pathInfo.split("/");
-
+            // api/v1/bill/my-bill
+            // User lay bill cua user
             if (pathParts.length == 2 && pathParts[1].equals("my-bill")) {
                 try {
-                    String userId = (String) req.getAttribute("userId");
+
+                    UserModel user = (UserModel) req.getAttribute("user");
                     BillService billService = new BillService();
-                    ArrayList<BillModel> bills = billService.getAll(new ObjectId(userId));
+                    ArrayList<BillModel> bills = billService.getAll(user.getId());
                     JsonMany<BillModel> result = new JsonMany<BillModel>(bills.size(), bills);
 
                     String json = result.toString();
@@ -61,11 +77,17 @@ public class Bill extends HttpServlet {
         resp.setContentType("application/json");
 
         try {
+
+            UserModel user = (UserModel) req.getAttribute("user");
+
+            if (!Check.isUser(user)) {
+                throw new Exception("You do not have permission");
+            }
+
             JsonObject data = HandleData.dataToJson(req);
             BillModel bill = BillMapping.map(data);
-            String userId = (String) req.getAttribute("userId");
 
-            bill.setUser(new ObjectId(userId));
+            bill.setUser(user.getId());
 
             BillService billService = new BillService();
             bill = billService.addBill(bill);

@@ -15,4 +15,9 @@ public interface IUserService {
 
   void deleteUser(ObjectId id) throws Exception;
 
+  UserModel updateRole(String id, String newRoleStr) throws Exception;
+
+  UserModel updatePhoto(ObjectId id, UserModel user) throws Exception;
+
+  UserModel updatePassword(UserModel user, String passwordCurrent, String password, String passwordConfirm) throws Exception;
 }

@@ -14,8 +14,8 @@ public class CartDAO implements ICartDAO {
     private MongoCollection<CartModel> cartCollection = new DatabaseConnect().getCollection("cart", CartModel.class);
 
     @Override
-    public CartModel getOne(String userId) {
-        CartModel cart = cartCollection.find(eq("user", new ObjectId(userId))).first();
+    public CartModel getOne(ObjectId userId) {
+        CartModel cart = cartCollection.find(eq("user", userId)).first();
         return cart;
     }
 

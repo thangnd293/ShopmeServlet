@@ -10,7 +10,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.api.helper.HandleData;
-import com.api.helper.HandleJson;
+import static com.api.helper.HandleJson.printJson;
+import static com.api.helper.HandleJson.printJsonError;
 import com.api.model.user.UserMapping;
 import com.api.model.user.UserModel;
 import com.api.service.auth.AuthService;
@@ -61,9 +62,9 @@ public class Signup extends HttpServlet {
 
       String json = String.format("{ status: %s , message: %s, email: %s }", "success" , "Please check your email to confirm your account", user.getEmail());
       
-      HandleJson.printJson(json, 200, resp);
+      printJson(json, 200, resp);
     } catch (Exception e) {
-      HandleJson.printJsonError("fail", e.getMessage(), 404, resp);
+      printJsonError("fail", e.getMessage(), 404, resp);
     }
   }
 }

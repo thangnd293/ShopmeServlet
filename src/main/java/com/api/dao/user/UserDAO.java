@@ -28,19 +28,19 @@ public class UserDAO implements IUserDAO {
 
   @Override
   public UserModel getOne(ObjectId id) {
-    UserModel user = userCollection.find(eq(id)).first();
+    UserModel user = userCollection.find(new BasicDBObject("isVerify", true)).filter(eq(id)).first();
     return user;
   }
 
   @Override
   public UserModel getOne(String email) {
-    UserModel user = userCollection.find(eq("email", email)).first();
+    UserModel user = userCollection.find(new BasicDBObject("isVerify", true)).filter(eq("email", email)).first();
     return user;
   }
 
   @Override
   public UserModel getOne(Bson filter) {
-    UserModel user = userCollection.find(filter).first();
+    UserModel user = userCollection.find(new BasicDBObject("isVerify", true)).filter(filter).first();
     return user;
   }
 
@@ -55,7 +55,7 @@ public class UserDAO implements IUserDAO {
       }
     };
 
-    userCollection.find().sort(new BasicDBObject("createAt", -1)).forEach(addUser);
+    userCollection.find(new BasicDBObject("isVerify", true)).sort(new BasicDBObject("createAt", 1)).forEach(addUser);
     return userList;
   }
 
@@ -70,7 +70,8 @@ public class UserDAO implements IUserDAO {
       }
     };
 
-    userCollection.find().sort(new BasicDBObject("createAt", -1)).limit(limit).forEach(addUser);
+    userCollection.find(new BasicDBObject("isVerify", true)).sort(new BasicDBObject("createAt", -1)).limit(limit)
+        .forEach(addUser);
     return userList;
   }
 
@@ -81,6 +82,7 @@ public class UserDAO implements IUserDAO {
 
   @Override
   public UserModel updateOne(ObjectId id, UserModel newUser) {
-    return userCollection.findOneAndReplace(eq("_id", id), newUser, new FindOneAndReplaceOptions().returnDocument(ReturnDocument.AFTER));
+    return userCollection.findOneAndReplace(eq("_id", id), newUser,
+        new FindOneAndReplaceOptions().returnDocument(ReturnDocument.AFTER));
   }
 }

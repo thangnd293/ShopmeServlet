@@ -30,8 +30,11 @@ public class CROSFilter implements Filter {
   private void addCorsHeader(HttpServletResponse response) {
     response.addHeader("Access-Control-Allow-Origin", "*");
     response.addHeader("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE, HEAD");
-    response.addHeader("Access-Control-Allow-Headers", "X-PINGOTHER, Origin, X-Requested-With, Content-Type, Accept");
+    response.addHeader("Access-Control-Allow-Headers", "origin, content-type, accept, Authorization, x-requested-with");
     response.addHeader("Access-Control-Max-Age", "1728000");
+    response.addHeader("Access-Control-Expose-Headers", "*,Authorization");
   }
+
+  
 
 }

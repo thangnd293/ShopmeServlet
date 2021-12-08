@@ -12,12 +12,14 @@ public interface IProductService {
 
     ArrayList<ProductModel> getAllProduct();
 
+    ArrayList<ProductModel> getProductFeatures();
 
     ArrayList<ProductModel> getAllProduct(String categoryId, String[] filter, String sortParam) throws Exception ;
 
     ProductModel updateProduct(String id, ProductModel product) throws Exception;
 
     void deleteProduct(String id) throws Exception;
+
 
     // ProductModel addVariant(String id, VariantModel variant) throws Exception;
 
