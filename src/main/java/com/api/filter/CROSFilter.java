@@ -21,20 +21,15 @@ public class CROSFilter implements Filter {
 
     if (response instanceof HttpServletResponse) {
       HttpServletResponse alteredResponse = ((HttpServletResponse) response);
-      addCorsHeader(alteredResponse);
+      setCorsHeader(alteredResponse);
     }
 
     filterChain.doFilter(request, response);
   }
 
-  private void addCorsHeader(HttpServletResponse response) {
-    response.addHeader("Access-Control-Allow-Origin", "*");
-    response.addHeader("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE, HEAD");
-    response.addHeader("Access-Control-Allow-Headers", "origin, content-type, accept, Authorization, x-requested-with");
-    response.addHeader("Access-Control-Max-Age", "1728000");
-    response.addHeader("Access-Control-Expose-Headers", "*,Authorization");
+  public static void setCorsHeader(HttpServletResponse response) {
+    response.setHeader("Access-Control-Allow-Origin", "*");
+    response.setHeader("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE, HEAD");
+    response.setHeader("Access-Control-Allow-Headers", "*");
   }
-
-  
-
 }

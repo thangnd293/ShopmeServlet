@@ -8,10 +8,12 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.api.helper.Check;
 import com.api.helper.HandleData;
 import static com.api.helper.HandleJson.printJson;
 import static com.api.helper.HandleJson.printJsonError;
 import com.api.helper.returnClass.JsonOne;
+import com.api.model.user.UserModel;
 import com.api.model.wishlist.WishlistModel;
 import com.api.service.wishlist.WishListService;
 import com.google.gson.JsonObject;
@@ -27,9 +29,14 @@ public class WishList extends HttpServlet {
             printJsonError("fail", "Not found", 404, resp);
         } else {
             try {
+                UserModel user = (UserModel) req.getAttribute("user");
+
+                if (!Check.isUser(user)) {
+                    throw new Exception("You do not have permission");
+                }
+
                 WishListService wishListService = new WishListService();
-                String userId = (String) req.getAttribute("userId");
-                WishlistModel wishList = wishListService.getWishList(userId);
+                WishlistModel wishList = wishListService.getWishList(user.getId());
                 JsonOne<WishlistModel> result = new JsonOne<WishlistModel>(wishList);
 
                 String json = result.toString();
@@ -45,12 +52,17 @@ public class WishList extends HttpServlet {
         resp.setContentType("application/json");
         JsonObject data = HandleData.dataToJson(req);
         String productId = data.get("product") != null ? data.get("product").getAsString() : null;
-        String userId = (String) req.getAttribute("userId");
 
         WishListService wishListService = new WishListService();
 
         try {
-            WishlistModel wishList = wishListService.toggleItem(userId, productId);
+
+            UserModel user = (UserModel) req.getAttribute("user");
+
+            if (!Check.isUser(user)) {
+                throw new Exception("You do not have permission");
+            }
+            WishlistModel wishList = wishListService.toggleItem(user.getId(), productId);
 
             JsonOne<WishlistModel> result = new JsonOne<WishlistModel>(wishList);
 

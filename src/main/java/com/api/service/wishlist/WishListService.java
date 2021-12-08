@@ -9,18 +9,18 @@ import org.bson.types.ObjectId;
 
 public class WishListService implements IWishListService {
     @Override
-    public WishlistModel getWishList(String userId) throws Exception {
+    public WishlistModel getWishList(ObjectId userId) throws Exception {
         if (userId == null) {
             throw new Exception("Product does not exist!!");
         }
 
         WishListDAO wishListDAO = new WishListDAO();
-        WishlistModel wishList = wishListDAO.getOne(new ObjectId(userId));
+        WishlistModel wishList = wishListDAO.getOne(userId);
         return wishList;
     }
 
     @Override
-    public WishlistModel toggleItem(String userId, String productId) throws Exception {
+    public WishlistModel toggleItem(ObjectId userId, String productId) throws Exception {
         if (productId == null || userId == null) {
             throw new Exception("Product does not exist!!");
         }

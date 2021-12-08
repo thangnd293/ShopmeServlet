@@ -39,6 +39,7 @@ public class ProductFilter implements Filter {
                 }
                 chain.doFilter(request, response);
             } catch (Exception e) {
+                CROSFilter.setCorsHeader(resp);
                 resp.setContentType("application/json");
                 printJsonError("fail", e.getMessage(), 403, resp);
             }

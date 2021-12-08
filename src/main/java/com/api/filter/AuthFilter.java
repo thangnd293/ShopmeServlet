@@ -13,7 +13,9 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.api.helper.Check;
 import static com.api.helper.HandleJson.printJsonError;
-@WebFilter(urlPatterns = { "/api/v1/user/*", "/api/v1/cart/*", "/api/v1/wishlist/*", "/api/v1/bill/*", "/api/v1/dashboard" })
+
+@WebFilter(urlPatterns = { "/api/v1/user/*", "/api/v1/cart/*", "/api/v1/wishlist/*", "/api/v1/bill/*",
+    "/api/v1/dashboard" })
 public class AuthFilter implements Filter {
   @Override
   public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
@@ -22,9 +24,10 @@ public class AuthFilter implements Filter {
     HttpServletResponse resp = (HttpServletResponse) response;
 
     try {
-      Check.checkLogged(req); 
+      Check.checkLogged(req);
       chain.doFilter(request, response);
     } catch (Exception e) {
+      CROSFilter.setCorsHeader(resp);
       resp.setContentType("application/json");
       printJsonError("fail", e.getMessage(), 403, resp);
     }

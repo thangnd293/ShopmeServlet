@@ -2,8 +2,10 @@ package com.api.service.wishlist;
 
 import com.api.model.wishlist.WishlistModel;
 
-public interface IWishListService {
-    WishlistModel getWishList(String userId) throws Exception;
+import org.bson.types.ObjectId;
 
-    WishlistModel toggleItem(String userId, String productId) throws Exception;
+public interface IWishListService {
+    WishlistModel getWishList(ObjectId userID) throws Exception;
+
+    WishlistModel toggleItem(ObjectId userId, String productId) throws Exception;
 }
