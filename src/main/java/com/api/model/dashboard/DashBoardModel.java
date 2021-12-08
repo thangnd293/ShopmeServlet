@@ -9,16 +9,22 @@ public class DashBoardModel {
     private CardRevenue revenue;
     private CardAmountSold amountSold;
     private CardCountNewUser countNewUser;
+    private ChartSaleModel chartSale;
+    private ChartUserModel chartUser;
     private ArrayList<BillModel> bills;
     private ArrayList<UserModel> users;
 
-    public DashBoardModel(CardRevenue revenue, CardAmountSold amountSold, CardCountNewUser countNewUser, ArrayList<BillModel> bills, ArrayList<UserModel> users) {
+    public DashBoardModel(CardRevenue revenue, CardAmountSold amountSold, CardCountNewUser countNewUser, ChartSaleModel chartSale, ChartUserModel chartUser, ArrayList<BillModel> bills, ArrayList<UserModel> users) {
         this.revenue = revenue;
         this.amountSold = amountSold;
         this.countNewUser = countNewUser;
+        this.chartSale = chartSale;
+        this.chartUser = chartUser;
         this.bills = bills;
         this.users = users;
     }
+
+    public DashBoardModel() {};
 
     public CardRevenue getRevenue() {
         return revenue;
@@ -58,6 +64,22 @@ public class DashBoardModel {
 
     public void setUsers(ArrayList<UserModel> users) {
         this.users = users;
+    }
+
+    public ChartSaleModel getChartSale() {
+        return chartSale;
+    }
+
+    public void setChartSale(ChartSaleModel chartSale) {
+        this.chartSale = chartSale;
+    }
+
+    public ChartUserModel getChartUser() {
+        return chartUser;
+    }
+
+    public void setChartUser(ChartUserModel chartUser) {
+        this.chartUser = chartUser;
     }
 
 }

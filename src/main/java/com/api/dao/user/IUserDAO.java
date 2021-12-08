@@ -3,8 +3,8 @@ package com.api.dao.user;
 import java.util.ArrayList;
 
 import com.api.model.user.UserModel;
-import com.mongodb.BasicDBObject;
 
+import org.bson.conversions.Bson;
 import org.bson.types.ObjectId;
 
 public interface IUserDAO {
@@ -14,9 +14,11 @@ public interface IUserDAO {
 
   UserModel getOne(String email);
 
-  UserModel getOne(BasicDBObject filter);
+  UserModel getOne(Bson filter);
 
-  ArrayList<UserModel> getAllUser();
+  ArrayList<UserModel> getAll();
+
+  ArrayList<UserModel> getUsers(int limit);
 
   Boolean deleteOne(ObjectId id);
 

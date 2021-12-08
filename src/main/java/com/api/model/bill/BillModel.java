@@ -7,6 +7,8 @@ import org.bson.types.ObjectId;
 
 public class BillModel {
     private ObjectId user;
+    private ObjectId id;
+    private String _id;
     private String userId;
     private ShippingAddressModel shippingAddress;
     private ArrayList<ItemModel> items;
@@ -14,8 +16,10 @@ public class BillModel {
     private double amount;
     private Date createAt;
 
-    public BillModel(ObjectId user, ShippingAddressModel shippingAddress, ArrayList<ItemModel> items, int quantity,
+    public BillModel(ObjectId id, ObjectId user, ShippingAddressModel shippingAddress, ArrayList<ItemModel> items,
+            int quantity,
             double amount, Date createAt) {
+        this.id = id;
         this.user = user;
         this.shippingAddress = shippingAddress;
         this.items = items;
@@ -81,6 +85,22 @@ public class BillModel {
 
     public void setUserId(String userId) {
         this.userId = userId;
+    }
+
+    public ObjectId getId() {
+        return id;
+    }
+
+    public void setId(ObjectId id) {
+        this.id = id;
+    }
+
+    public String get_id() {
+        return _id;
+    }
+
+    public void set_id(String _id) {
+        this._id = _id;
     }
 
 }

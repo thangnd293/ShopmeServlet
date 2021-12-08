@@ -8,6 +8,7 @@ import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.FindOneAndReplaceOptions;
 import com.mongodb.client.model.ReturnDocument;
 
+import org.bson.conversions.Bson;
 import org.bson.types.ObjectId;
 
 import com.api.config.database.DatabaseConnect;
@@ -38,13 +39,13 @@ public class UserDAO implements IUserDAO {
   }
 
   @Override
-  public UserModel getOne(BasicDBObject filter) {
+  public UserModel getOne(Bson filter) {
     UserModel user = userCollection.find(filter).first();
     return user;
   }
 
   @Override
-  public ArrayList<UserModel> getAllUser() {
+  public ArrayList<UserModel> getAll() {
     ArrayList<UserModel> userList = new ArrayList<UserModel>();
 
     Consumer<UserModel> addUser = new Consumer<UserModel>() {
@@ -54,7 +55,22 @@ public class UserDAO implements IUserDAO {
       }
     };
 
-    userCollection.find().forEach(addUser);
+    userCollection.find().sort(new BasicDBObject("createAt", -1)).forEach(addUser);
+    return userList;
+  }
+
+  @Override
+  public ArrayList<UserModel> getUsers(int limit) {
+    ArrayList<UserModel> userList = new ArrayList<UserModel>();
+
+    Consumer<UserModel> addUser = new Consumer<UserModel>() {
+      @Override
+      public void accept(final UserModel user) {
+        userList.add(user);
+      }
+    };
+
+    userCollection.find().sort(new BasicDBObject("createAt", -1)).limit(limit).forEach(addUser);
     return userList;
   }
 

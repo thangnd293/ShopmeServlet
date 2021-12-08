@@ -31,7 +31,7 @@ public class BillMapping implements IMapping<BillModel> {
 
         ShippingAddressModel shippingAdress = ShippingAddressMapping.map(jsonShippingAddress);
 
-        return new BillModel(null, shippingAdress, items, quantity, amount, createAt);
+        return new BillModel(null, null, shippingAdress, items, quantity, amount, createAt);
     }
 
 }

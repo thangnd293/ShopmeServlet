@@ -12,4 +12,7 @@ public interface IBillDAO {
     public ArrayList<BillModel> getAll();
 
     public ArrayList<BillModel> getAll(ObjectId userId);
+
+    public ArrayList<BillModel> getBills(int limit);
+
 }

@@ -37,8 +37,9 @@ public class BillDAO implements IBillDAO {
     @Override
     public ArrayList<BillModel> getAll(ObjectId userId) {
         ArrayList<BillModel> bills = new ArrayList<BillModel>();
-        BasicDBObject sortObject = BasicDBObject.parse("{ \"createAt\" : -1 }");
-        MongoCursor<BillModel> cursor = billCollection.find(eq("user", userId)).sort(sortObject).iterator();
+        BasicDBObject sortBson = new BasicDBObject("createAt", -1);
+
+        MongoCursor<BillModel> cursor = billCollection.find(eq("user", userId)).sort(sortBson).iterator();
 
         while (cursor.hasNext()) {
             BillModel bill = cursor.next();
@@ -47,52 +48,18 @@ public class BillDAO implements IBillDAO {
         return bills;
     }
 
-    // @Override
-    // public ArrayList<BillModel> getAll(Bson query) {
-    //     LocalDate today = LocalDate.now();
-    //     LocalDate earlier = today.minusMonths(1);
-    //     LocalDate startTimeToday = today.withDayOfMonth(1);
-    //     LocalDate endTimeToday = today.withDayOfMonth(today.lengthOfMonth());
-    //     LocalDate startTimeEarlier = earlier.withDayOfMonth(1);
-    //     LocalDate endTimeEarlier = earlier.withDayOfMonth(earlier.lengthOfMonth());
-    //     ArrayList<BillModel> bills = new ArrayList<BillModel>();
-    //     BasicDBObject matchCurrMonth = new BasicDBObject("$match",
-    //             new BasicDBObject("createAt", new BasicDBObject("$gt", startTimeToday).append("$lt", endTimeToday)));
+    @Override
+    public ArrayList<BillModel> getBills(int limit) {
+        ArrayList<BillModel> bills = new ArrayList<BillModel>();
+        BasicDBObject sortBson = new BasicDBObject("createAt", -1);
+        
+        MongoCursor<BillModel> cursor = billCollection.find().sort(sortBson).limit(limit).iterator();
 
-    //     BasicDBObject matchPrevMonth = new BasicDBObject("$match",
-    //             new BasicDBObject("createAt", new BasicDBObject("$gt", startTimeEarlier).append("$lt", endTimeEarlier)));
-
-    //     BasicDBObject groupBy = new BasicDBObject("$group",
-    //             new BasicDBObject("_id", null).append("total", new BasicDBObject("$sum", "$amount")).append("count",
-    //                     new BasicDBObject("$sum", 1)));
-
-    //     MongoCollection<Document> DocCollection = new DatabaseConnect().getCollection("bill", Document.class);
-
-    //     Consumer<Document> print = new Consumer<Document>() {
-    //         @Override
-    //         public void accept(final Document doc) {
-    //             System.out.println(doc.toJson());
-    //         }
-    //     };
-
-    //     DocCollection.aggregate(Arrays.asList(
-    //             matchCurrMonth,
-    //             groupBy)).forEach(print);
-
-    //     DocCollection.aggregate(Arrays.asList(
-    //                 matchPrevMonth,
-    //                 groupBy)).forEach(print);
-    
-
-    //     // ArrayList<Document> result = new ArrayList<Document>();
-    //     // try {
-    //     // for (Document document : output) {
-    //     // System.out.println(document);
-    //     // }
-    //     // } catch (Exception e) {
-    //     // System.out.println(e.getMessage());
-    //     // }
-
-    //     return bills;
-    // }
+        while (cursor.hasNext()) {
+            BillModel bill = cursor.next();
+            bills.add(bill);
+        }
+        
+        return bills;
+    }
 }

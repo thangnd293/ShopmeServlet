@@ -3,9 +3,9 @@ package com.api.model.dashboard;
 public class ChartSaleModel {
     private String name;
     private String[] categories;
-    private int[] values;
+    private double[] values;
 
-    public ChartSaleModel(String name, String[] categories, int[] values) {
+    public ChartSaleModel(String name, String[] categories, double[] values) {
         this.name = name;
         this. categories = categories;
         this.values = values;
@@ -27,11 +27,11 @@ public class ChartSaleModel {
         this.categories = categories;
     }
 
-    public int[] getValues() {
+    public double[] getValues() {
         return values;
     }
 
-    public void setValues(int[] values) {
+    public void setValues(double[] values) {
         this.values = values;
     }
 

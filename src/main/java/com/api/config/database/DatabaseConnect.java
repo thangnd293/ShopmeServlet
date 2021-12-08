@@ -29,9 +29,8 @@ public class DatabaseConnect implements IDatabase {
 
   public DatabaseConnect() {
     mongoClient = MongoClients.create(
-    "mongodb+srv://thangnd:kVCjpMjwvKd5vzFS@shopme.e2nl2.mongodb.net/shopme?retryWrites=true&w=majority");
+    "mongodb://admin:DRX1OYxkHm9PDBaH@sg-thangnd-48377.servers.mongodirector.com:27017/shopme?authSource=admin&readPreference=primary&appname=MongoDB%20Compass&directConnection=true&ssl=false");
 
-    // mongoClient = MongoClients.create();
     pojoCodecRegistry = fromRegistries(MongoClientSettings.getDefaultCodecRegistry(),
         fromProviders(PojoCodecProvider.builder().automatic(true).build()));
     dataBase = mongoClient.getDatabase("shopme").withCodecRegistry(pojoCodecRegistry);

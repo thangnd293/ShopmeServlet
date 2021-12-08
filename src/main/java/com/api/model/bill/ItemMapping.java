@@ -16,6 +16,6 @@ public class ItemMapping implements IMapping<ItemModel> {
         // double price = object.get("unit_amount.value") != null ? object.get("unit_amount.value").getAsDouble() : 0;
         double total = price * quantity;
 
-        return new ItemModel(null, name, sku, price, quantity, total);
+        return new ItemModel(name, sku, price, quantity, total);
     }
 }

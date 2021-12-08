@@ -1,18 +1,14 @@
 package com.api.model.bill;
 
-import org.bson.types.ObjectId;
-
 public class ItemModel {
-    private ObjectId id;
     private String name;
     private String sku;
     private double price;
     private int quantity;
     private double total;
 
-    public ItemModel(ObjectId id, String name, String sku ,double price, int quantity, double total) {
-        this.id = id;
-        this.name =name;
+    public ItemModel(String name, String sku ,double price, int quantity, double total) {
+        this.name = name;
         this.sku = sku;
         this.price = price;
         this.quantity = quantity;
@@ -20,15 +16,6 @@ public class ItemModel {
     }
 
     public ItemModel() {};
-
-    
-    public ObjectId getId() {
-        return id;
-    }
-
-    public void setId(ObjectId id) {
-        this.id = id;
-    }
 
     public String getName() {
         return name;

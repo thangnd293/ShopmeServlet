@@ -1,6 +1,7 @@
 package com.api.service.user;
 
 import java.util.ArrayList;
+
 import com.api.dao.user.UserDAO;
 import com.api.model.user.UserModel;
 
@@ -8,15 +9,9 @@ import org.bson.types.ObjectId;
 
 public class UserService implements IUserService {
   @Override
-  public UserModel addUser(UserModel user) {
-    UserDAO userDAO = new UserDAO();
-    return userDAO.addOne(user);
-  }
-
-  @Override
   public ArrayList<UserModel> getAllUser() {
     UserDAO userDAO = new UserDAO();
-    return userDAO.getAllUser();
+    return userDAO.getAll();
   }
 
   @Override
@@ -26,9 +21,9 @@ public class UserService implements IUserService {
   }
 
   @Override
-  public UserModel getUserByUsername(String userName) {
+  public UserModel getUserByUsername(String email) {
     UserDAO userDAO = new UserDAO();
-    return userDAO.getOne(userName);
+    return userDAO.getOne(email);
   }
 
   @Override
