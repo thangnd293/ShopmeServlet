@@ -27,9 +27,9 @@ public class Cors implements Filter {
 
     public static void set(HttpServletRequest req, HttpServletResponse resp) {
         // Authorize the origin, all headers, and all methods
-        resp.addHeader("Access-Control-Allow-Origin", "*");
-        resp.addHeader("Access-Control-Allow-Headers", "*");
-        resp.addHeader("Access-Control-Allow-Methods",
+        resp.setHeader("Access-Control-Allow-Origin", "*");
+        resp.setHeader("Access-Control-Allow-Headers", "*");
+        resp.setHeader("Access-Control-Allow-Methods",
                 "GET, OPTIONS, HEAD, PUT, POST, DELETE");
 
         // CORS handshake (pre-flight request)
