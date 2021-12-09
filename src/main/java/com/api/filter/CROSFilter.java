@@ -11,25 +11,27 @@ import javax.servlet.annotation.WebFilter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-@WebFilter(urlPatterns = "/*")
+@WebFilter(asyncSupported = true, urlPatterns = { "/*" })
 public class CROSFilter implements Filter {
-  @Override
-  public void doFilter(ServletRequest request, ServletResponse response, FilterChain filterChain)
-      throws IOException, ServletException {
-    HttpServletRequest req = (HttpServletRequest) request;
-    System.out.println("CORSFilter HTTP Request: " + req.getMethod());
 
-    if (response instanceof HttpServletResponse) {
-      HttpServletResponse alteredResponse = ((HttpServletResponse) response);
-      setCorsHeader(alteredResponse);
+    @Override
+    public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
+        HttpServletRequest request = (HttpServletRequest) servletRequest;
+
+        // Authorize the origin, all headers, and all methods
+        ((HttpServletResponse) servletResponse).addHeader("Access-Control-Allow-Origin", "*");
+        ((HttpServletResponse) servletResponse).addHeader("Access-Control-Allow-Headers", "*");
+        ((HttpServletResponse) servletResponse).addHeader("Access-Control-Allow-Methods",
+                "GET, OPTIONS, HEAD, PUT, POST, DELETE");
+
+        HttpServletResponse resp = (HttpServletResponse) servletResponse;
+
+        // CORS handshake (pre-flight request)
+        if (request.getMethod().equals("OPTIONS")) {
+            resp.setStatus(HttpServletResponse.SC_ACCEPTED);
+            return;
+        }
+        // pass the request along the filter chain
+        filterChain.doFilter(request, servletResponse);
     }
-
-    filterChain.doFilter(request, response);
-  }
-
-  public static void setCorsHeader(HttpServletResponse response) {
-    response.setHeader("Access-Control-Allow-Origin", "*");
-    response.setHeader("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE, HEAD");
-    response.setHeader("Access-Control-Allow-Headers", "*");
-  }
 }

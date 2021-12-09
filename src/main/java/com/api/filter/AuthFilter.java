@@ -27,7 +27,7 @@ public class AuthFilter implements Filter {
       Check.checkLogged(req);
       chain.doFilter(request, response);
     } catch (Exception e) {
-      CROSFilter.setCorsHeader(resp);
+      // CROSFilter.setCorsHeader(resp);
       resp.setContentType("application/json");
       printJsonError("fail", e.getMessage(), 403, resp);
     }
