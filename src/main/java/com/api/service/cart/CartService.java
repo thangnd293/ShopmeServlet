@@ -6,7 +6,7 @@ import com.api.dao.cart.CartDAO;
 import com.api.model.cart.CartModel;
 import com.api.model.cart.LineItem;
 import com.api.model.product.ProductModel;
-import com.api.service.variant.VariantService;
+import com.api.service.product.ProductService;
 
 import org.bson.types.ObjectId;
 
@@ -129,7 +129,7 @@ public class CartService implements ICartService {
     }
 
     private void handleCartData(CartModel cart) throws Exception {
-        VariantService variantService = new VariantService();
+        ProductService productService = new ProductService();
         int qty = 0;
         double total = 0;
         int n = cart.getItems().size();
@@ -137,7 +137,7 @@ public class CartService implements ICartService {
             LineItem item = cart.getItems().get(i);
             String variantId = item.getVariantId();
 
-            ProductModel product = variantService.getVariant(variantId);
+            ProductModel product = productService.getVariant(variantId);
 
             if (product == null) {
                 cart.getItems().remove(i);

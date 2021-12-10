@@ -48,47 +48,12 @@ public class Cart extends HttpServlet {
             printJsonError("fail", "Not found", 404, resp);
         } else {
             String[] pathParts = pathInfo.split("/");
-            if (pathParts.length == 2 && pathParts[1].equals(("add-to-cart"))) {
-                try {
-                    UserModel user = (UserModel) req.getAttribute("user");
-
-                    if (!Check.isUser(user)) {
-                        throw new Exception("You do not have permission");
-                    }
-                    JsonObject data = HandleData.dataToJson(req);
-                    String productVariation = data.get("productVariation") != null
-                            ? data.get("productVariation").getAsString()
-                            : null;
-                    int quantity = data.get("quantity") != null ? data.get("quantity").getAsInt() : null;
-                    CartService cartService = new CartService();
-                    CartModel cart = cartService.addToCart(user.getId(), productVariation, quantity);
-                    JsonOne<CartModel> result = new JsonOne<CartModel>(cart);
-
-                    String json = result.toString();
-                    printJson(json, 200, resp);
-
-                } catch (Exception e) {
-                    printJsonError("fail", e.getMessage(), 404, resp);
-                }
+            if (pathParts.length == 2 && pathParts[1].equals("add-to-cart")) {
+                this.addItemToCart(req, resp);
             } 
             // api/v1/cart/reset
             else if(pathParts.length == 2 && pathParts[1].equals("reset")) {
-                try {
-                    UserModel user = (UserModel) req.getAttribute("user");
-
-                    if (!Check.isUser(user)) {
-                        throw new Exception("You do not have permission");
-                    }
-                    CartService cartService = new CartService();
-                    CartModel cart = cartService.resetCart(user.getId());
-                    JsonOne<CartModel> result = new JsonOne<CartModel>(cart);
-
-                    String json = result.toString();
-                    printJson(json, 200, resp);
-
-                } catch (Exception e) {
-                    printJsonError("fail", e.getMessage(), 404, resp);
-                }
+                this.emptyCart(req, resp);
             }
             else {
                 printJsonError("fail", "Not found", 404, resp);
@@ -99,28 +64,33 @@ public class Cart extends HttpServlet {
     @Override
     protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         resp.setContentType("application/json");
-        try {
-
-            UserModel user = (UserModel) req.getAttribute("user");
-
-            if (!Check.isUser(user)) {
-                throw new Exception("You do not have permission");
+        String pathInfo = req.getPathInfo();
+        if(pathInfo == null) {
+            try {
+                UserModel user = (UserModel) req.getAttribute("user");
+    
+                if (!Check.isUser(user)) {
+                    throw new Exception("You do not have permission");
+                }
+                JsonObject data = HandleData.dataToJson(req);
+    
+                String productVariation = data.get("productVariation") != null ? data.get("productVariation").getAsString()
+                        : null;
+                int quantity = data.get("quantity") != null ? data.get("quantity").getAsInt() : null;
+                CartService cartService = new CartService();
+                CartModel cart = cartService.updateItem(user.getId(), productVariation, quantity);
+                JsonOne<CartModel> result = new JsonOne<CartModel>(cart);
+    
+                String json = result.toString();
+                printJson(json, 200, resp);
+    
+            } catch (Exception e) {
+                printJsonError("fail", e.getMessage(), 400, resp);
             }
-            JsonObject data = HandleData.dataToJson(req);
-
-            String productVariation = data.get("productVariation") != null ? data.get("productVariation").getAsString()
-                    : null;
-            int quantity = data.get("quantity") != null ? data.get("quantity").getAsInt() : null;
-            CartService cartService = new CartService();
-            CartModel cart = cartService.updateItem(user.getId(), productVariation, quantity);
-            JsonOne<CartModel> result = new JsonOne<CartModel>(cart);
-
-            String json = result.toString();
-            printJson(json, 200, resp);
-
-        } catch (Exception e) {
-            printJsonError("fail", e.getMessage(), 400, resp);
+        } else {
+            printJsonError("fail", "Not found", 404, resp);
         }
+        
     }
 
     @Override
@@ -153,6 +123,52 @@ public class Cart extends HttpServlet {
             } else {
                 printJsonError("fail", "Not found", 404, resp);
             }
+        }
+    }
+
+    private void addItemToCart(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+        try {
+            UserModel user = (UserModel) req.getAttribute("user");
+
+            if (!Check.isUser(user)) {
+                throw new Exception("You do not have permission");
+            }
+
+            JsonObject data = HandleData.dataToJson(req);
+
+            String productVariation = data.get("productVariation") != null
+                    ? data.get("productVariation").getAsString()
+                    : null;
+            int quantity = data.get("quantity") != null ? data.get("quantity").getAsInt() : null;
+
+            CartService cartService = new CartService();
+            CartModel cart = cartService.addToCart(user.getId(), productVariation, quantity);
+            JsonOne<CartModel> result = new JsonOne<CartModel>(cart);
+
+            String json = result.toString();
+            printJson(json, 200, resp);
+
+        } catch (Exception e) {
+            printJsonError("fail", e.getMessage(), 404, resp);
+        }
+    }
+
+    private void emptyCart(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+        try {
+            UserModel user = (UserModel) req.getAttribute("user");
+
+            if (!Check.isUser(user)) {
+                throw new Exception("You do not have permission");
+            }
+            CartService cartService = new CartService();
+            CartModel cart = cartService.resetCart(user.getId());
+            JsonOne<CartModel> result = new JsonOne<CartModel>(cart);
+
+            String json = result.toString();
+            printJson(json, 200, resp);
+
+        } catch (Exception e) {
+            printJsonError("fail", e.getMessage(), 404, resp);
         }
     }
 }

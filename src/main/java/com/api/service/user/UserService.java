@@ -105,7 +105,6 @@ public class UserService implements IUserService {
     user.setPasswordConfirm(null);
     user.setPasswordResetExpires(null);
     user.setPasswordResetCode(null);
-    user.setRole(null);
     user.setId(null);
   }
 }

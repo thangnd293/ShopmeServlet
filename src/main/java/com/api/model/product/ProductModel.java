@@ -26,6 +26,8 @@ public class ProductModel {
     private Date createAt;
     private Boolean isFeatured;
     private ArrayList<VariantModel> variants;
+    private ArrayList<ProductModel> relateProducts;
+
 
     public ProductModel(String id, String name, ArrayList<String> categories, String categoryPath, double price, double discountPrice, ArrayList<String> imageCovers, ArrayList<String> images, String longDescription, String shortDescription, String color, String brandId, String brand, String slug, Boolean isFeatured, ArrayList<String> filters, ArrayList<FilterModel> facets, Date createAt, ArrayList<VariantModel> variants) {
         
@@ -203,6 +205,18 @@ public class ProductModel {
 
     public void setVariants(ArrayList<VariantModel> variants) {
         this.variants = variants;
+    }
+
+    public Boolean isIsFeatured() {
+        return isFeatured;
+    }
+
+    public ArrayList<ProductModel> getRelateProducts() {
+        return relateProducts;
+    }
+
+    public void setRelateProducts(ArrayList<ProductModel> relateProducts) {
+        this.relateProducts = relateProducts;
     }
 
 }

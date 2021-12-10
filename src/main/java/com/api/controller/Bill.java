@@ -33,42 +33,16 @@ public class Bill extends HttpServlet {
         // api/v1/bill
         // Admin lay tat ca bill
         if (pathInfo == null) {
-            try {
-                UserModel user = (UserModel) req.getAttribute("user");
-
-                if (!Check.isAdmin(user)) {
-                    throw new Exception("You do not have permission");
-                }
-
-                BillService billService = new BillService();
-                ArrayList<BillModel> bills = billService.getAll();
-                JsonMany<BillModel> result = new JsonMany<BillModel>(bills.size(), bills);
-
-                String json = result.toString();
-                printJson(json, 200, resp);
-            } catch (Exception e) {
-                printJsonError("fail", e.getMessage(), 404, resp);
-            }
-
+            this.adminGetAllBill(req, resp);
         } else {
             String[] pathParts = pathInfo.split("/");
             // api/v1/bill/my-bill
             // User lay bill cua user
-            if (pathParts.length == 2 && pathParts[1].equals("my-bill")) {
-                try {
-
-                    UserModel user = (UserModel) req.getAttribute("user");
-                    BillService billService = new BillService();
-                    ArrayList<BillModel> bills = billService.getAll(user.getId());
-                    JsonMany<BillModel> result = new JsonMany<BillModel>(bills.size(), bills);
-
-                    String json = result.toString();
-                    printJson(json, 200, resp);
-                } catch (Exception e) {
-                    printJsonError("fail", e.getMessage(), 404, resp);
-                }
+            if(pathParts.length == 1 && pathParts[1].equals("my-bill")) {
+                this.userGetUsersBill(req, resp);
+            } else {
+                printJsonError("fail", "Not found", 404, resp);
             }
-
         }
     }
 
@@ -97,6 +71,40 @@ public class Bill extends HttpServlet {
             String json = result.toString();
             printJson(json, 200, resp);
 
+        } catch (Exception e) {
+            printJsonError("fail", e.getMessage(), 404, resp);
+        }
+    }
+
+    private void adminGetAllBill(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+        try {
+            UserModel user = (UserModel) req.getAttribute("user");
+
+            if (!Check.isAdmin(user)) {
+                throw new Exception("You do not have permission");
+            }
+
+            BillService billService = new BillService();
+            ArrayList<BillModel> bills = billService.getAll();
+            JsonMany<BillModel> result = new JsonMany<BillModel>(bills.size(), bills);
+
+            String json = result.toString();
+            printJson(json, 200, resp);
+        } catch (Exception e) {
+            printJsonError("fail", e.getMessage(), 404, resp);
+        }
+    }
+
+    private void userGetUsersBill(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+        try {
+
+            UserModel user = (UserModel) req.getAttribute("user");
+            BillService billService = new BillService();
+            ArrayList<BillModel> bills = billService.getAll(user.getId());
+            JsonMany<BillModel> result = new JsonMany<BillModel>(bills.size(), bills);
+
+            String json = result.toString();
+            printJson(json, 200, resp);
         } catch (Exception e) {
             printJsonError("fail", e.getMessage(), 404, resp);
         }

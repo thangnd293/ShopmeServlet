@@ -23,11 +23,16 @@ public class AuthFilter implements Filter {
     HttpServletRequest req = (HttpServletRequest) request;
     HttpServletResponse resp = (HttpServletResponse) response;
 
+    Cors.set(req, resp);
+    if (req.getMethod().equals("OPTIONS")) {
+      resp.setStatus(HttpServletResponse.SC_ACCEPTED);
+      return;
+    }
+
     try {
       Check.checkLogged(req);
       chain.doFilter(request, response);
     } catch (Exception e) {
-      Cors.set(req, resp);
       resp.setContentType("application/json");
       printJsonError("fail", e.getMessage(), 403, resp);
     }

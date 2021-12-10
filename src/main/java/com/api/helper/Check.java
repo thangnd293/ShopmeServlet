@@ -1,5 +1,7 @@
 package com.api.helper;
 
+import javax.mail.internet.AddressException;
+import javax.mail.internet.InternetAddress;
 import javax.servlet.http.HttpServletRequest;
 
 import com.api.dao.user.UserDAO;
@@ -12,6 +14,7 @@ import org.json.JSONObject;
 import io.jsonwebtoken.Claims;
 
 import java.util.Date;
+
 public final class Check {
     public static boolean isNumeric(String str) {
         try {
@@ -23,11 +26,11 @@ public final class Check {
     }
 
     public static boolean isFname(String str) {
-        return str.length() >= 1 && str.matches("[a-zA-Z]+");
+        return str.length() >= 1 && str.matches("[A-Za-zÀÁÂÃÈÉÊÌÍÒÓÔÕÙÚÝàáâãèéêìíòóôõùúýĂăĐđĨĩŨũƠơƯưẠ-ỹ]+");
     }
 
     public static boolean isLname(String str) {
-        return str.length() >= 1 && str.matches("[a-zA-Z ]+");
+        return str.length() >= 1 && str.matches("[A-Za-zÀÁÂÃÈÉÊÌÍÒÓÔÕÙÚÝàáâãèéêìíòóôõùúýĂăĐđĨĩŨũƠơƯưẠ-ỹ ]+");
     }
 
     public static boolean isValidPassword(String str) {
@@ -38,16 +41,16 @@ public final class Check {
         return str.length() >= 8 && str.length() <= 12 && isNumeric(str);
     }
 
-    // public static boolean isValidEmailAddress(String email) {
-    // boolean result = true;
-    // try {
-    // InternetAddress emailAddr = new InternetAddress(email);
-    // emailAddr.validate();
-    // } catch (AddressException ex) {
-    // result = false;
-    // }
-    // return result;
-    // }
+    public static boolean isValidEmailAddress(String email) {
+        boolean result = true;
+        try {
+            InternetAddress emailAddr = new InternetAddress(email);
+            emailAddr.validate();
+        } catch (AddressException ex) {
+            result = false;
+        }
+        return result;
+    }
 
     public static void checkLogged(HttpServletRequest req) throws Exception {
         String jwt = req.getHeader("Authorization");
@@ -72,14 +75,14 @@ public final class Check {
         boolean checkUserNotExist = user == null;
         // today.after(user.getChangePasswordAt()) || user.getRole() != role;
 
-        if(checkUserNotExist) {
+        if (checkUserNotExist) {
             throw new Exception("The user belonging to this token does no longer exist");
         }
 
         Date today = new Date();
         boolean checkUserChangePassword = user.getChangePasswordAt() == null || today.after(user.getChangePasswordAt());
 
-        if(!checkUserChangePassword) {
+        if (!checkUserChangePassword) {
             throw new Exception("User recently changed password. Please log in again");
         }
 

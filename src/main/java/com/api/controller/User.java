@@ -65,82 +65,83 @@ public class User extends HttpServlet {
     // api/v1/user/*
     else {
       String[] pathParts = pathInfo.split("/");
+      UserModel user = (UserModel) req.getAttribute("user");
+      JsonObject data = HandleData.dataToJson(req);
+
       // api/v1/user/me
       // Cap nhat avt
       if (pathParts.length == 2 && pathParts[1].equals("me")) {
-        UserModel user = (UserModel) req.getAttribute("user");
-
-        JsonObject data = HandleData.dataToJson(req);
-
-        String photo = data.get("photo") != null ? data.get("photo").getAsString() : null;
-
-        user.setPhoto(photo);
-
-        UserService userService = new UserService();
-        try {
-          user = userService.updatePhoto(user.getId(), user);
-          JsonOne<UserModel> result = new JsonOne<UserModel>(user);
-
-          String json = result.toString();
-          printJson(json, 200, resp);
-        } catch (Exception e) {
-          printJsonError("fail", e.getMessage(), 404, resp);
-        }
+        this.userUpdateUsersAvt(data, user, resp);
       }
       // api/v1/user/update-password
       // Cap nhat mat khau
       else if (pathParts.length == 2 && pathParts[1].equals("update-password")) {
-        UserModel user = (UserModel) req.getAttribute("user");
-
-        JsonObject data = HandleData.dataToJson(req);
-
-        String passwordCurrent = data.get("passwordCurrent") != null ? data.get("passwordCurrent").getAsString() : null;
-        String password = data.get("password") != null ? data.get("password").getAsString() : null;
-        String passwordConfirm = data.get("passwordConfirm") != null ? data.get("passwordConfirm").getAsString() : null;
-
-        UserService userService = new UserService();
-        try {
-          user = userService.updatePassword(user, passwordCurrent, password, passwordConfirm);
-          JsonOne<UserModel> result = new JsonOne<UserModel>(user);
-
-          String json = result.toString();
-          printJson(json, 200, resp);
-        } catch (Exception e) {
-          printJsonError("fail", e.getMessage(), 404, resp);
-        }
+        this.userUpdateUsersPassword(data, user, resp);
       }
       // api/v1/user/:id
       // admin cap nhat quyen cho user
       else if (pathParts.length == 2) {
-        try {
-          UserModel user = (UserModel) req.getAttribute("user");
-
-          if (!Check.isAdmin(user)) {
-            throw new Exception("You do not have permission");
-          }
-
-          JsonObject data = HandleData.dataToJson(req);
-
-          String id = pathParts[1];
-
-          String newRoleStr = data.get("role") != null ? data.get("role").getAsString() : null;
-
-          UserService userService = new UserService();
-          UserModel newUser = userService.updateRole(id, newRoleStr);
-
-          JsonOne<UserModel> result = new JsonOne<UserModel>(newUser);
-
-          String json = result.toString();
-          printJson(json, 200, resp);
-        } catch (Exception e) {
-          printJsonError("fail", e.getMessage(), 403, resp);
-        }
-      }
-      else {
+        this.adminUpdateRole(user, pathParts[1], data, resp);
+      } else {
         printJsonError("fail", "Not found", 404, resp);
       }
-
     }
+  }
 
+  private void userUpdateUsersAvt(JsonObject data, UserModel user, HttpServletResponse resp) throws IOException {
+    String photo = data.get("photo") != null ? data.get("photo").getAsString() : null;
+
+    if(photo == null) {
+      printJsonError("fail", "Invalid photo", 404, resp);
+    } else {
+      UserService userService = new UserService();
+      try {
+        user.setPhoto(photo);
+        user = userService.updatePhoto(user.getId(), user);
+        JsonOne<UserModel> result = new JsonOne<UserModel>(user);
+  
+        String json = result.toString();
+        printJson(json, 200, resp);
+      } catch (Exception e) {
+        printJsonError("fail", e.getMessage(), 404, resp);
+      }
+    }
+  }
+
+  private void userUpdateUsersPassword(JsonObject data, UserModel user, HttpServletResponse resp) throws IOException {
+    String passwordCurrent = data.get("passwordCurrent") != null ? data.get("passwordCurrent").getAsString() : null;
+    String password = data.get("password") != null ? data.get("password").getAsString() : null;
+    String passwordConfirm = data.get("passwordConfirm") != null ? data.get("passwordConfirm").getAsString() : null;
+
+    UserService userService = new UserService();
+    try {
+      user = userService.updatePassword(user, passwordCurrent, password, passwordConfirm);
+      JsonOne<UserModel> result = new JsonOne<UserModel>(user);
+
+      String json = result.toString();
+      printJson(json, 200, resp);
+    } catch (Exception e) {
+      printJsonError("fail", e.getMessage(), 404, resp);
+    }
+  }
+
+  private void adminUpdateRole(UserModel admin, String userId, JsonObject data, HttpServletResponse resp)
+      throws IOException {
+    try {
+      if (!Check.isAdmin(admin)) {
+        throw new Exception("You do not have permission");
+      }
+      String newRoleStr = data.get("role") != null ? data.get("role").getAsString() : null;
+
+      UserService userService = new UserService();
+      UserModel newUser = userService.updateRole(userId, newRoleStr);
+
+      JsonOne<UserModel> result = new JsonOne<UserModel>(newUser);
+
+      String json = result.toString();
+      printJson(json, 200, resp);
+    } catch (Exception e) {
+      printJsonError("fail", e.getMessage(), 403, resp);
+    }
   }
 }

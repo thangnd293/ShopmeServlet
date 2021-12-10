@@ -24,6 +24,16 @@ public class ProductService implements IProductService {
             throw new Exception("Product does not exist!!");
         }
 
+        BasicDBObject filter = new BasicDBObject("brandId", product.getBrandId());
+        ArrayList<ProductModel> relateProducts = productDao.getAll(product.getCategoryPath(), filter, null);
+        // Giam tai du lieu khong can thiet
+        for (ProductModel p : relateProducts) {
+            preparePrint(p);
+        }
+        if(relateProducts.size() > 0) {
+            product.setRelateProducts(relateProducts);
+        }   
+
         product.setFacets(null);
         return product;
     }
@@ -64,6 +74,10 @@ public class ProductService implements IProductService {
         BasicDBObject filter = new BasicDBObject("isFeatured", true);
         BasicDBObject sort = new BasicDBObject("createAt", -1);
         productList = productDao.getAll("/", filter, sort);
+
+        for (ProductModel product : productList) {
+            preparePrint(product);
+        }
         
         return productList;
     }
@@ -89,6 +103,7 @@ public class ProductService implements IProductService {
         handleProductData(product);
 
         productDao.addOne(product);
+        product.setFacets(null);
         return product;
     }
 
@@ -102,36 +117,13 @@ public class ProductService implements IProductService {
             throw new Exception("Product does not exist!!");
         }
 
-        String name = newProduct.getName();
-        ArrayList<String> categories = newProduct.getCategories();
-        String brandId = newProduct.getBrandId();
-        String color = newProduct.getColor();
-        ArrayList<String> imageCovers = newProduct.getImageCovers();
-        ArrayList<String> images = newProduct.getImages();
-        String longDescription = newProduct.getLongDescription();
-        String shortDescription = newProduct.getShortDescription();
-        Boolean isFeatured = newProduct.getIsFeatured();
-        ArrayList<String> filters = newProduct.getFilters();
-        Date createAt = newProduct.getCreateAt();
-        ArrayList<VariantModel> variants = newProduct.getVariants();
-
-        product.setName(name != null ? name : product.getName());
-        product.setCategories(categories != null ? categories : product.getCategories());
-        product.setBrandId(brandId != null ? brandId : product.getBrandId());
-        product.setColor(color != null ? color : product.getColor());
-        product.setImages(images != null ? images : product.getImages());
-        product.setImageCovers(imageCovers != null ? imageCovers : product.getImageCovers());
-        product.setLongDescription(longDescription != null ? longDescription : product.getLongDescription());
-        product.setShortDescription(shortDescription != null ? shortDescription : product.getShortDescription());
-        product.setIsFeatured(isFeatured != null ? isFeatured : product.getIsFeatured());
-        product.setFilters(filters != null ? filters : product.getFilters());
-        product.setCreateAt(createAt != null ? createAt : product.getCreateAt());
-        product.setVariants(variants != null ? variants : product.getVariants());
+        this.updateProduct(product, newProduct);
 
         // Tiền xử lý dữ liệu
         handleProductData(product);
 
         productDAO.updateOne(id, product);
+        product.setFacets(null);
         return product;
     }
 
@@ -141,6 +133,21 @@ public class ProductService implements IProductService {
         Boolean isSuccess = productDAO.deleteOne(id);
         if (isSuccess == false) {
             throw new Exception("Deletion failed!!");
+        }
+    }
+
+    @Override
+    public ProductModel getVariant(String id) throws Exception {
+        ProductDAO productDAO = new ProductDAO();
+        try {
+            ProductModel product = productDAO.getVariant(id);
+            if (product == null) {
+                throw new Exception();
+            }
+            return product;
+
+        } catch (Exception e) {
+            throw new Exception("Variant does not exist!!");
         }
     }
  
@@ -320,69 +327,37 @@ public class ProductService implements IProductService {
         return sort;
     }
 
-    // @Override
-    // public ProductModel addVariant(String id, VariantModel variant) throws Exception {
-    //     ProductDAO productDAO = new ProductDAO();
-    //     ProductModel product = productDAO.getOne(id);
+    private void updateProduct(ProductModel product, ProductModel newProduct) {
+        String name = newProduct.getName();
+        ArrayList<String> categories = newProduct.getCategories();
+        String brandId = newProduct.getBrandId();
+        String color = newProduct.getColor();
+        ArrayList<String> imageCovers = newProduct.getImageCovers();
+        ArrayList<String> images = newProduct.getImages();
+        String longDescription = newProduct.getLongDescription();
+        String shortDescription = newProduct.getShortDescription();
+        Boolean isFeatured = newProduct.getIsFeatured();
+        ArrayList<String> filters = newProduct.getFilters();
+        Date createAt = newProduct.getCreateAt();
+        ArrayList<VariantModel> variants = newProduct.getVariants();
 
-    //     if (product == null) {
-    //         throw new Exception("Product does not exist!!");
-    //     }
-
-    //     product.getVariants().add(variant);
-    //     handleProductData(product);
-    //     product = productDAO.updateOne(id, product);
-
-    //     return product;
-    // }
-
-    // @Override
-    // public ProductModel updateVariant(String id, VariantModel variant) throws Exception {
-    //     ProductDAO productDAO = new ProductDAO();
-    //     ProductModel product = productDAO.getOne(id);
-
-    //     if (product == null) {
-    //         throw new Exception("Product does not exist!!");
-    //     }
-
-    //     for (VariantModel v : product.getVariants()) {
-    //         if (v.getId().equals(variant.getId())) {
-    //             v.setSizeId(variant.getSizeId() != null ? variant.getSizeId() : v.getSizeId());
-    //             v.setPrice(variant.getPrice() != -1 ? variant.getPrice() : v.getPrice());
-    //             v.setDiscountPrice(
-    //                     variant.getDiscountPrice() != -1 ? variant.getDiscountPrice() : v.getDiscountPrice());
-
-    //             break;
-    //         }
-    //     }
-
-    //     handleProductData(product);
-
-    //     product = productDAO.updateOne(id, product);
-
-    //     product.getVariants().removeIf(v -> !v.getId().equals(variant.getId()));
-
-    //     return product;
-    // }
-
-    // @Override
-    // public ProductModel removeVariant(String id, String variantId) throws Exception {
-
-    //     if (id == null || variantId == null) {
-    //         throw new Exception("Invalid path!!");
-    //     }
-
-    //     ProductDAO productDAO = new ProductDAO();
-    //     ProductModel product = productDAO.getOne(id);
-    //     if (product == null) {
-    //         throw new Exception("Product does not exist!!");
-    //     }
-
-    //     product.getVariants().removeIf(variant -> variant.getId().equals(variantId));
-    //     handleProductData(product);
-
-    //     return productDAO.updateOne(id, product);
-    // }
-
+        product.setName(name != null ? name : product.getName());
+        product.setCategories(categories != null ? categories : product.getCategories());
+        product.setBrandId(brandId != null ? brandId : product.getBrandId());
+        product.setColor(color != null ? color : product.getColor());
+        product.setImages(images != null ? images : product.getImages());
+        product.setImageCovers(imageCovers != null ? imageCovers : product.getImageCovers());
+        product.setLongDescription(longDescription != null ? longDescription : product.getLongDescription());
+        product.setShortDescription(shortDescription != null ? shortDescription : product.getShortDescription());
+        product.setIsFeatured(isFeatured != null ? isFeatured : product.getIsFeatured());
+        product.setFilters(filters != null ? filters : product.getFilters());
+        product.setCreateAt(createAt != null ? createAt : product.getCreateAt());
+        product.setVariants(variants != null ? variants : product.getVariants());
+    }
    
+    private void preparePrint(ProductModel product) {
+        product.setFacets(null);
+        product.setLongDescription(null);
+        product.setShortDescription(null);
+    }
 }

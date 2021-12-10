@@ -1,6 +1,9 @@
 package com.api.utils;
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.Date;
 import java.util.Properties;
+import java.util.Scanner;
 
 import javax.mail.Authenticator;
 import javax.mail.Message;
@@ -14,7 +17,7 @@ import javax.mail.internet.MimeMessage;
 public class Email {
     public static boolean sendEmail(String host, String port,
             final String email, final String password, String toAddress,
-            String subject, String message) throws AddressException,
+            String subject, String html) throws AddressException,
             MessagingException {
  
         // sets SMTP server properties
@@ -41,7 +44,7 @@ public class Email {
         msg.setRecipients(Message.RecipientType.TO, toAddresses);
         msg.setSubject(subject);
         msg.setSentDate(new Date());
-        msg.setText(message);
+        msg.setContent(html, "text/html; charset=utf-8");
  
         try {
             // sends the e-mail
@@ -52,5 +55,22 @@ public class Email {
 
         return true;
  
+    }
+
+    public static String getHtmlEmail(String path) {
+        String html = "";
+        try {
+          File myObj = new File(path);
+          Scanner myReader = new Scanner(myObj);
+          while (myReader.hasNextLine()) {
+            String line = myReader.nextLine();
+            html += line;
+          }
+          myReader.close();
+        } catch (FileNotFoundException e) {
+          System.out.println("An error occurred.");
+        };
+
+        return html;
     }
 }

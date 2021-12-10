@@ -29,8 +29,6 @@ public class ProductDAO implements IProductDAO {
 
         while (cursor.hasNext()) {
             ProductModel product = cursor.next();
-            preparePrint(product);
-
             products.add(product);
         }
         return products;
@@ -44,8 +42,6 @@ public class ProductDAO implements IProductDAO {
 
         while (cursor.hasNext()) {
             ProductModel product = cursor.next();
-            preparePrint(product);
-
             productList.add(product);
         }
 
@@ -86,9 +82,5 @@ public class ProductDAO implements IProductDAO {
         return product;
     }
 
-    private void preparePrint(ProductModel product) {
-        product.setFacets(null);
-        product.setLongDescription(null);
-        product.setShortDescription(null);
-    }
+
 }

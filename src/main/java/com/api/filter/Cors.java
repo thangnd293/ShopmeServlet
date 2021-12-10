@@ -15,12 +15,17 @@ import javax.servlet.http.HttpServletResponse;
 public class Cors implements Filter {
 
     @Override
-    public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
+    public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain)
+            throws IOException, ServletException {
         HttpServletRequest req = (HttpServletRequest) servletRequest;
         HttpServletResponse resp = (HttpServletResponse) servletResponse;
 
         Cors.set(req, resp);
-
+        // CORS handshake (pre-flight request)
+        if (req.getMethod().equals("OPTIONS")) {
+            resp.setStatus(HttpServletResponse.SC_ACCEPTED);
+            return;
+        }
         // pass the request along the filter chain
         filterChain.doFilter(servletRequest, servletResponse);
     }
@@ -32,10 +37,5 @@ public class Cors implements Filter {
         resp.setHeader("Access-Control-Allow-Methods",
                 "GET, OPTIONS, HEAD, PUT, POST, DELETE");
 
-        // CORS handshake (pre-flight request)
-        if (req.getMethod().equals("OPTIONS")) {
-            resp.setStatus(HttpServletResponse.SC_ACCEPTED);
-            return;
-        }
     }
 }

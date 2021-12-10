@@ -50,11 +50,14 @@ public class Signup extends HttpServlet {
       UserModel userSignup = UserMapping.map(data);
       UserModel user = authService.signup(userSignup);
 
-      String subject = "Welcome to Shopme";
+      String subject = "Welcome to SummonShop";
+      String path = this.getServletContext().getRealPath("/WEB-INF/classes/com/api/emailtemplate/emailVerify.html");
 
-      String message = user.getVerifyCode();
-      boolean checkIsEmailSend = Email.sendEmail(host, port, email, password, user.getEmail(), subject, message);
-      
+      String html = Email.getHtmlEmail(path);
+      html = html.replace("<%NAME>", user.getFname());
+      html = html.replace("<%CODE>", user.getVerifyCode());
+      boolean checkIsEmailSend = Email.sendEmail(host, port, email, password, user.getEmail(), subject, html);
+
       if(!checkIsEmailSend) {
         userService.deleteUser(user.getId());
         throw new Exception("There were an error. Please try again!");
@@ -67,4 +70,5 @@ public class Signup extends HttpServlet {
       printJsonError("fail", e.getMessage(), 404, resp);
     }
   }
+
 }

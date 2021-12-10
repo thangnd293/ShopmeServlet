@@ -20,11 +20,6 @@ public interface IProductService {
 
     void deleteProduct(String id) throws Exception;
 
-
-    // ProductModel addVariant(String id, VariantModel variant) throws Exception;
-
-    // ProductModel updateVariant(String id, VariantModel variant) throws Exception;
-
-    // ProductModel removeVariant(String id, String variantId) throws Exception;
+    ProductModel getVariant(String id) throws Exception;
 
 }
