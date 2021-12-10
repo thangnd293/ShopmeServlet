@@ -24,7 +24,7 @@ public class ProductService implements IProductService {
             throw new Exception("Product does not exist!!");
         }
 
-        BasicDBObject filter = new BasicDBObject("brandId", product.getBrandId());
+        BasicDBObject filter = BasicDBObject.parse(String.format("{\"$and\": [ { \"brandId\": \"%s\" }, { \"_id\": { \"$not\": { \"$eq\": \"%s\" } } } ]}", product.getBrandId(), id));
         ArrayList<ProductModel> relateProducts = productDao.getAll(product.getCategoryPath(), filter, null);
         // Giam tai du lieu khong can thiet
         for (ProductModel p : relateProducts) {

@@ -101,7 +101,6 @@ public class AuthService implements IAuthService {
     String verifyCode = Common.getRandom();
     userSignup.setVerifyCode(verifyCode);
     userSignup.setVerifyExpireAt(new Date());
-    
     return userDAO.addOne(userSignup);
   }
 
@@ -119,7 +118,7 @@ public class AuthService implements IAuthService {
     user.setIsVerify(true);
     user.setVerifyExpireAt(null);
     user.setVerifyCode(null);
-
+    user.setCreateAt(new Date());
     user = userDAO.updateOne(user.getId(), user);
     UserService.preparePrintUser(user);
 

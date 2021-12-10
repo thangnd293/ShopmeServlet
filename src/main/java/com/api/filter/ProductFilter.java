@@ -26,10 +26,17 @@ public class ProductFilter implements Filter {
         HttpServletResponse resp = (HttpServletResponse) response;
         String method = req.getMethod();
 
+        Cors.set(req, resp);
+        if (method.equals("OPTIONS")) {
+            resp.setStatus(HttpServletResponse.SC_ACCEPTED);
+            return;
+        }
+
         if (method.equals("GET")) {
             chain.doFilter(request, response);
 
         } else {
+
             try {
                 Check.checkLogged(req);
                 UserModel user = (UserModel) req.getAttribute("user");

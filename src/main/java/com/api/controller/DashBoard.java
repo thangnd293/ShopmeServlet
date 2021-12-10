@@ -39,7 +39,7 @@ public class DashBoard extends HttpServlet {
             printJson(json, 200, resp);
 
         } catch (Exception e) {
-            printJsonError("fail", "Not found", 404, resp);
+            printJsonError("fail", e.getMessage(), 404, resp);
         }
 
     }
