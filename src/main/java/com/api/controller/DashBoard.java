@@ -22,9 +22,8 @@ public class DashBoard extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         resp.setContentType("application/json");
-
+        
         try {
-
             UserModel user = (UserModel) req.getAttribute("user");
 
             if (!Check.isAdmin(user)) {

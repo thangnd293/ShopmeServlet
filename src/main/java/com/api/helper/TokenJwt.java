@@ -31,7 +31,6 @@ public class TokenJwt {
           .claim("fname", fname).claim("lname", lname).setIssuedAt(Date.from(Instant.now())).setExpiration(date)
           .signWith(SignatureAlgorithm.HS256, SECRET.getBytes("UTF-8")).compact();
     } catch (Exception e) {
-      System.out.println(e);
     }
 
     return tokenServer;
