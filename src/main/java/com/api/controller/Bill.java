@@ -86,8 +86,8 @@ public class Bill extends HttpServlet {
             bill = billService.addBill(bill);
 
             String subject = "Reset your password (Valid for 5 minutes)";
-            String path = this.getServletContext().getRealPath("/WEB-INF/classes/com/api/emailtemplate/transaction.html");
-            String pathItem = this.getServletContext().getRealPath("/WEB-INF/classes/com/api/emailtemplate/html.html");
+            String path = this.getServletContext().getRealPath("/emailtemplate/transaction.html");
+            String pathItem = this.getServletContext().getRealPath("/emailtemplate/item.html");
 
             String html = EmailUtil.getHtmlEmail(path);
             String htmlItem = EmailUtil.getHtmlEmail(pathItem);
@@ -103,9 +103,9 @@ public class Bill extends HttpServlet {
             for (ItemModel item : bill.getItems()) {
                 String itemTemplate = "";
                 itemTemplate = htmlItem.replace("<%SKU>", item.getSku());
-                itemTemplate = htmlItem.replace("<%NAME>", item.getName());
-                itemTemplate = htmlItem.replace("<%QUANTITY>",Integer.toString(item.getQuantity()));
-                itemTemplate = htmlItem.replace("<%TOTAL>", String.valueOf(item.getTotal()));
+                itemTemplate = itemTemplate.replace("<%NAME>", item.getName());
+                itemTemplate = itemTemplate.replace("<%QUANTITY>",Integer.toString(item.getQuantity()));
+                itemTemplate = itemTemplate.replace("<%TOTAL>", String.valueOf(item.getTotal()));
                 htmlListItem += itemTemplate;
             }
 
@@ -117,8 +117,7 @@ public class Bill extends HttpServlet {
                 throw new Exception("There were an error. Please try again!");
             }
 
-            String json = String.format("{ status: %s , message: %s}", "success",
-                    "Thank you, bill has been sent to your email");
+            String json = "{ \"status\": \"success\" , \"message\": \"Thank you, bill has been sent to your email\"}";
             printJson(json, 200, resp);
 
         } catch (Exception e) {

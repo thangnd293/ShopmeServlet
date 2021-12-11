@@ -48,8 +48,9 @@ public class FilterDAO implements IFilterDAO {
                 String id = (String) d.get("_id");
                 String type = (String) d.get("type");
                 String name = (String) d.get("name");
-
-                filterList.add(new FilterModel(id, type, name, null));
+                if(!name.equals("Default")) {
+                    filterList.add(new FilterModel(id, type, name, null));
+                }
             }
         };
 

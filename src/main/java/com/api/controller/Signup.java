@@ -51,7 +51,7 @@ public class Signup extends HttpServlet {
       UserModel user = authService.signup(userSignup);
 
       String subject = "Welcome to SummonShop (Valid for 5 minutes)";
-      String path = this.getServletContext().getRealPath("/WEB-INF/classes/com/api/emailtemplate/emailVerify.html");
+      String path = this.getServletContext().getRealPath("/emailtemplate/emailVerify.html");
 
       String html = EmailUtil.getHtmlEmail(path);
       html = html.replace("<%NAME>", user.getFname());

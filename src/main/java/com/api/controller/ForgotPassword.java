@@ -48,7 +48,7 @@ public class ForgotPassword extends HttpServlet {
             String passwordResetCode = authService.forgotPassword(userEmail);
 
             String subject = "Reset your password (Valid for 5 minutes)";
-            String path = this.getServletContext().getRealPath("/WEB-INF/classes/com/api/emailtemplate/resetpassword.html");
+            String path = this.getServletContext().getRealPath("/emailtemplate/resetpassword.html");
 
             String html = EmailUtil.getHtmlEmail(path);
             html = html.replace("<%CODE>", passwordResetCode);

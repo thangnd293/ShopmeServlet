@@ -1,10 +1,8 @@
 package com.api.model.user;
 
-import com.api.model.mongo.IMongoBuilder;
-
 import org.bson.types.ObjectId;
 
-public class UserBuilder implements IMongoBuilder<UserBuilder>, IUserBuilder {
+public class UserBuilder implements IUserBuilder {
   
   private ObjectId id;
   private String fname;
