@@ -95,16 +95,14 @@ public class DashBoardDAO implements IDashBoardDAO {
     }
 
     @Override
-    public CardCountNewUser getCountNewUser(Bson matchCurrMonth, Bson matchPrevMonth, String prevMonthStr) {
+    public CardCountNewUser getCountNewUser (LocalDate startTimeToday ,LocalDate endTimeToday, LocalDate startTimeEarlier, LocalDate endTimeEarlier, String prevMonthStr) {
         BasicDBObject groupBy = new BasicDBObject("$group",
                 new BasicDBObject("_id", null).append("count", new BasicDBObject("$sum", 1)));
 
         Document currMonth = userCollection.aggregate(Arrays.asList(
-                matchCurrMonth,
                 groupBy)).first();
 
         Document prevMonth = userCollection.aggregate(Arrays.asList(
-                matchPrevMonth,
                 groupBy)).first();
 
         int countCurrMonth = 0;
@@ -168,12 +166,14 @@ public class DashBoardDAO implements IDashBoardDAO {
 
     @Override
     public ChartUserModel getChartUser(LocalDate startTimeToday, LocalDate endTimeToday, String currMonthStr) {
-        MongoCursor<Document> cursor = userCollection.aggregate(Arrays.asList(
-            new Document("$group", 
-            new Document("_id", 
-            new Document("date", 
-            new Document("$dayOfMonth", "$createAt")))
-            .append("count", new Document("$sum", 1L)))))
+        MongoCursor<Document> cursor = userCollection.aggregate(Arrays.asList(new Document("$match", 
+        new Document("isVerify", true)), 
+        new Document("$group", 
+        new Document("_id", 
+        new Document("date", 
+        new Document("$dayOfMonth", "$createAt")))
+                .append("count", 
+        new Document("$sum", 1L)))))
             .iterator();
 
         int numberOfDays = endTimeToday.getDayOfMonth();

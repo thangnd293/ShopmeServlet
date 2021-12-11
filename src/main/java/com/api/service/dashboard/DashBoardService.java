@@ -26,6 +26,9 @@ public class DashBoardService implements IDashBoardService {
         LocalDate startTimeToday = today.withDayOfMonth(1);
         LocalDate endTimeToday = today.withDayOfMonth(today.lengthOfMonth());
 
+        LocalDate startTimeEarlier = earlier.withDayOfMonth(1);
+        LocalDate endTimeEarlier = earlier.withDayOfMonth(earlier.lengthOfMonth());
+
         BasicDBObject matchCurrMonth = getMatchInAMonth(today);
         BasicDBObject matchPrevMonth = getMatchInAMonth(earlier);
 
@@ -38,7 +41,7 @@ public class DashBoardService implements IDashBoardService {
 
         CardAmountSold cardAmountSold = dashBoardDAO.getAmountSold(matchCurrMonth, matchPrevMonth, prevMonthStr);
 
-        CardCountNewUser cardCountNewUser = dashBoardDAO.getCountNewUser(matchCurrMonth, matchPrevMonth, prevMonthStr);
+        CardCountNewUser cardCountNewUser = dashBoardDAO.getCountNewUser(startTimeToday, endTimeToday, startTimeEarlier, endTimeEarlier, prevMonthStr);
 
         ChartSaleModel chartSale = dashBoardDAO.getChartSale(startTimeToday, endTimeToday, currMonthStr);
 

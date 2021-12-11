@@ -16,7 +16,7 @@ import com.api.model.user.UserMapping;
 import com.api.model.user.UserModel;
 import com.api.service.auth.AuthService;
 import com.api.service.user.UserService;
-import com.api.utils.Email;
+import com.api.utils.EmailUtil;
 import com.google.gson.JsonObject;
 
 @WebServlet(urlPatterns = "/api/v1/signup")
@@ -50,13 +50,13 @@ public class Signup extends HttpServlet {
       UserModel userSignup = UserMapping.map(data);
       UserModel user = authService.signup(userSignup);
 
-      String subject = "Welcome to SummonShop";
+      String subject = "Welcome to SummonShop (Valid for 5 minutes)";
       String path = this.getServletContext().getRealPath("/WEB-INF/classes/com/api/emailtemplate/emailVerify.html");
 
-      String html = Email.getHtmlEmail(path);
+      String html = EmailUtil.getHtmlEmail(path);
       html = html.replace("<%NAME>", user.getFname());
       html = html.replace("<%CODE>", user.getVerifyCode());
-      boolean checkIsEmailSend = Email.sendEmail(host, port, email, password, user.getEmail(), subject, html);
+      boolean checkIsEmailSend = EmailUtil.sendEmail(host, port, email, password, user.getEmail(), subject, html);
 
       if(!checkIsEmailSend) {
         userService.deleteUser(user.getId());

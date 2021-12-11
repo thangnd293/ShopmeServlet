@@ -11,7 +11,7 @@ public final class Common {
   public static Date time(int time) {
     Calendar c = Calendar.getInstance();
     c.setTime(new Date());
-    c.add(Calendar.SECOND, time);
+    c.add(Calendar.MINUTE, time);
     return c.getTime();
   }
 

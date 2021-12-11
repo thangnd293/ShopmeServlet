@@ -20,7 +20,8 @@ public class TokenJwt {
     String tokenServer = null;
 
     try {
-      Date date = Common.time(60 * 60 * 4);
+      // Token co han 1 Ngay
+      Date date = Common.time(60 * 24);
 
       String id = user.get_id();
       String email = user.getEmail();

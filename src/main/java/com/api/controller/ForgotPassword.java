@@ -14,7 +14,7 @@ import static com.api.helper.HandleJson.printJson;
 import static com.api.helper.HandleJson.printJsonError;
 import com.api.service.auth.AuthService;
 import com.api.service.auth.IAuthService;
-import com.api.utils.Email;
+import com.api.utils.EmailUtil;
 import com.google.gson.JsonObject;
 
 @WebServlet(urlPatterns = "/api/v1/forgot-password")
@@ -44,13 +44,17 @@ public class ForgotPassword extends HttpServlet {
         JsonObject data = HandleData.dataToJson(req);
         String userEmail = data.get("email") != null ? data.get("email").getAsString() : null;
         try {
-            IAuthService authService = new AuthService();
+            AuthService authService = new AuthService();
 
             String passwordResetCode = authService.forgotPassword(userEmail);
 
-            String subject = "Reset your password";
-            String message = passwordResetCode;
-            boolean checkIsEmailSend = Email.sendEmail(host, port, email, password, userEmail, subject, message);
+            String subject = "Reset your password (Valid for 5 minutes)";
+            String path = this.getServletContext().getRealPath("/WEB-INF/classes/com/api/emailtemplate/resetpassword.html");
+
+            String html = EmailUtil.getHtmlEmail(path);
+            html = html.replace("<%CODE>", passwordResetCode);
+
+            boolean checkIsEmailSend = EmailUtil.sendEmail(host, port, email, password, userEmail, subject, html);
 
             if (!checkIsEmailSend) {
                 throw new Exception("There were an error. Please try again!");

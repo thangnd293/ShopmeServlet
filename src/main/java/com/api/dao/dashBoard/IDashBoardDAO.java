@@ -16,7 +16,7 @@ public interface IDashBoardDAO {
 
     public CardAmountSold getAmountSold (Bson matchCurrMonth, Bson matchPrevMonth, String prevMonthStr);
 
-    public CardCountNewUser getCountNewUser (Bson matchCurrMonth, Bson matchPrevMonth, String prevMonthStr);
+    public CardCountNewUser getCountNewUser (LocalDate startTimeToday ,LocalDate endTimeToday, LocalDate startTimeEarlier, LocalDate endTimeEarlier, String prevMonthStr);
 
     public ChartSaleModel getChartSale (LocalDate startTimeToday, LocalDate endTimeToday, String currMonthStr);
 

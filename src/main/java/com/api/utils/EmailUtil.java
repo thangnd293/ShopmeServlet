@@ -14,7 +14,7 @@ import javax.mail.Transport;
 import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
-public class Email {
+public class EmailUtil {
     public static boolean sendEmail(String host, String port,
             final String email, final String password, String toAddress,
             String subject, String html) throws AddressException,

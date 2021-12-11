@@ -45,7 +45,7 @@ public class DatabaseConnect implements IDatabase {
     MongoCollection<UserModel> User = dataBase.getCollection("user", UserModel.class);
 
     User.createIndex(Indexes.ascending("verifyExpireAt"),
-    new IndexOptions().expireAfter(100L, TimeUnit.MINUTES));
+    new IndexOptions().expireAfter(5L, TimeUnit.MINUTES));
 
     MongoCollection<CartModel> Cart = dataBase.getCollection("cart", CartModel.class);
     Cart.createIndex(Indexes.ascending("user"));
