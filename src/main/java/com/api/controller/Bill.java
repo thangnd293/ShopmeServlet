@@ -42,10 +42,6 @@ public class Bill extends HttpServlet {
         password = context.getInitParameter("password");
     }
 
-    // public Bill() {
-    //     // super();
-    // }
-
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         resp.setContentType("application/json");
@@ -85,7 +81,7 @@ public class Bill extends HttpServlet {
             BillService billService = new BillService();
             bill = billService.addBill(bill);
 
-            String subject = "Reset your password (Valid for 5 minutes)";
+            String subject = "Thank you ^^";
             String path = this.getServletContext().getRealPath("/emailtemplate/transaction.html");
             String pathItem = this.getServletContext().getRealPath("/emailtemplate/item.html");
 

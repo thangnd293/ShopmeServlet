@@ -1,7 +1,6 @@
 package com.api.helper;
 
 import java.io.IOException;
-import java.net.URLDecoder;
 import java.util.stream.Collectors;
 
 import javax.servlet.ServletException;
@@ -11,11 +10,6 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
 public class HandleData {
-  public static <Model> Model dataToClass(HttpServletRequest req, Class<Model> model)
-      throws ServletException, IOException {
-    return new Gson().fromJson(req.getReader(), model);
-  }
-
   public static JsonObject dataToJson(HttpServletRequest req) throws ServletException, IOException {
     String body = req.getReader().lines().collect(Collectors.joining());
 
@@ -23,19 +17,4 @@ public class HandleData {
 
     return json;
   }
-
-  public static JsonObject queryStringToJson(HttpServletRequest req) throws ServletException, IOException {
-    String myStringDecoded = URLDecoder.decode(req.getQueryString(), "UTF-8");
-
-    JsonObject json = new JsonObject();
-
-    String[] parts = myStringDecoded.split("&");
-    for (String part : parts) {
-      String[] keyVal = part.split("=");
-      json.addProperty(keyVal[0], keyVal[1]);
-    }
-
-    return json;
-  }
-
 }
