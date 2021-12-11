@@ -38,7 +38,13 @@ public class ProductDAO implements IProductDAO {
     public ArrayList<ProductModel> getAll(String categoryPath, BasicDBObject filters, BasicDBObject sort) {
         ArrayList<ProductModel> productList = new ArrayList<ProductModel>();
 
-        MongoCursor<ProductModel> cursor = productCollection.find(Filters.regex("categoryPath", categoryPath)).filter(filters).sort(sort).iterator();
+        MongoCursor<ProductModel> cursor = null;
+        
+        if(filters != null) {
+            cursor = productCollection.find(Filters.regex("categoryPath", categoryPath)).filter(filters).sort(sort).iterator();
+        } else {
+            cursor = productCollection.find(Filters.regex("categoryPath", categoryPath)).iterator();
+        }
 
         while (cursor.hasNext()) {
             ProductModel product = cursor.next();

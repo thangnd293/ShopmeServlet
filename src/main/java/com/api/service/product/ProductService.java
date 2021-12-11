@@ -101,7 +101,7 @@ public class ProductService implements IProductService {
         product.setId(id);
         // Tiền xử lý dữ liệu
         handleProductData(product);
-
+        product.setIsFeatured(false);
         productDao.addOne(product);
         product.setFacets(null);
         return product;
@@ -258,7 +258,6 @@ public class ProductService implements IProductService {
 
         product.setPrice(price);
         product.setDiscountPrice(discountPrice);
-
     }
 
     private BasicDBObject filterProduct(String[] filter) {

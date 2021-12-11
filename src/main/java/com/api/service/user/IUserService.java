@@ -9,7 +9,7 @@ import org.bson.types.ObjectId;
 public interface IUserService {
   UserModel getUserByID(ObjectId id);
 
-  UserModel getUserByUsername(String userName);
+  UserModel getUserByEmail(String email);
 
   ArrayList<UserModel> getAllUser();
 

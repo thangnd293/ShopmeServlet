@@ -13,6 +13,7 @@ import com.mongodb.BasicDBObject;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
 
+import org.bson.BsonNull;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 
@@ -96,14 +97,28 @@ public class DashBoardDAO implements IDashBoardDAO {
 
     @Override
     public CardCountNewUser getCountNewUser (LocalDate startTimeToday ,LocalDate endTimeToday, LocalDate startTimeEarlier, LocalDate endTimeEarlier, String prevMonthStr) {
-        BasicDBObject groupBy = new BasicDBObject("$group",
-                new BasicDBObject("_id", null).append("count", new BasicDBObject("$sum", 1)));
 
-        Document currMonth = userCollection.aggregate(Arrays.asList(
-                groupBy)).first();
+        Document currMonth = userCollection.aggregate(Arrays.asList(new Document("$match", 
+        new Document("$and", Arrays.asList(new Document("isVerify", true), 
+                    new Document("createAt", 
+                    new Document("$gt", startTimeToday)
+                            .append("$lte", endTimeToday))))), 
+        new Document("$group", 
+        new Document("_id", 
+        new BsonNull())
+                .append("count", 
+        new Document("$sum", 1L))))).first();
 
-        Document prevMonth = userCollection.aggregate(Arrays.asList(
-                groupBy)).first();
+        Document prevMonth = userCollection.aggregate(Arrays.asList(new Document("$match", 
+        new Document("$and", Arrays.asList(new Document("isVerify", true), 
+                    new Document("createAt", 
+                    new Document("$gt", startTimeEarlier)
+                            .append("$lte", endTimeEarlier))))), 
+        new Document("$group", 
+        new Document("_id", 
+        new BsonNull())
+                .append("count", 
+        new Document("$sum", 1L))))).first();
 
         int countCurrMonth = 0;
         if (currMonth != null) {
@@ -166,8 +181,12 @@ public class DashBoardDAO implements IDashBoardDAO {
 
     @Override
     public ChartUserModel getChartUser(LocalDate startTimeToday, LocalDate endTimeToday, String currMonthStr) {
-        MongoCursor<Document> cursor = userCollection.aggregate(Arrays.asList(new Document("$match", 
-        new Document("isVerify", true)), 
+        MongoCursor<Document> cursor = userCollection.aggregate(Arrays.asList(
+        new Document("$match", 
+        new Document("$and", Arrays.asList(new Document("isVerify", true), 
+                    new Document("createAt", 
+                    new Document("$gt", startTimeToday)
+                            .append("$lte", endTimeToday))))), 
         new Document("$group", 
         new Document("_id", 
         new Document("date", 

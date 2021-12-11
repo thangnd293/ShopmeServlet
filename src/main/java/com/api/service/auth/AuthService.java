@@ -140,7 +140,7 @@ public class AuthService implements IAuthService {
     String resetCodeHash = Encryption.encrypt(resetCode, Encryption.key());
 
     user.setPasswordResetCode(resetCodeHash);
-    Date date = new Date(new Date().getTime() + 1 * 60 * 1000);
+    Date date = new Date(new Date().getTime() + 5 * 60 * 1000);
     user.setPasswordResetExpires(date);
     userDAO.updateOne(user.getId(), user);
     return resetCode;
@@ -155,7 +155,7 @@ public class AuthService implements IAuthService {
 
     UserDAO userDAO = new UserDAO();
     
-    String query = String.format("{ \"email\": \"%s\"}", email, resetCode);
+    String query = String.format("{ \"email\": \"%s\"}", email);
     BasicDBObject filter = BasicDBObject.parse(query);
     UserModel user = userDAO.getOne(filter);
 

@@ -15,19 +15,27 @@ public class UserService implements IUserService {
   @Override
   public ArrayList<UserModel> getAllUser() {
     UserDAO userDAO = new UserDAO();
-    return userDAO.getAll();
+    ArrayList<UserModel> users = userDAO.getAll();
+    for (UserModel user : users) {
+      user.set_id(user.getId().toString());
+    }
+    return users;
   }
 
   @Override
   public UserModel getUserByID(ObjectId id) {
     UserDAO userDAO = new UserDAO();
-    return userDAO.getOne(id);
+    UserModel user = userDAO.getOne(id);
+    user.set_id(user.getId().toString());
+    return user;
   }
 
   @Override
-  public UserModel getUserByUsername(String email) {
+  public UserModel getUserByEmail(String email) {
     UserDAO userDAO = new UserDAO();
-    return userDAO.getOne(email);
+    UserModel user = userDAO.getOne(email);
+    user.set_id(user.getId().toString());
+    return user;
   }
 
   @Override

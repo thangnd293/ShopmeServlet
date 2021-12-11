@@ -50,12 +50,12 @@ public class FilterService implements IFilterService {
     @Override
     public ArrayList<FilterModel> getSize() throws Exception {
         FilterDAO filterDAO = new FilterDAO();
-        BasicDBObject query = BasicDBObject.parse("{ '$or': [ {'name': 'Clothing sizes'}, {'name': 'Shoe sizes'}, { 'type': 'Clothing sizes' }, { 'type': 'Shoe sizes' }]}");
+        BasicDBObject query = BasicDBObject.parse("{ '$or': [ {'name': 'Clothing sizes'}, {'name': 'Shoe sizes'}, {'name': 'Default'}, { 'type': 'Clothing sizes' }, { 'type': 'Shoe sizes' }]}");
         ArrayList<FilterModel> filters = filterDAO.getAll(query);
         ArrayList<FilterModel> sizes = new ArrayList<FilterModel>();
 
         for (FilterModel filter : filters) {
-            if(filter.getName().equals("Clothing sizes") || filter.getName().equals("Shoe sizes")) {
+            if(filter.getName().equals("Clothing sizes") || filter.getName().equals("Shoe sizes") || filter.getName().equals("Default")) {
                 sizes.add(filter);
             }
         }

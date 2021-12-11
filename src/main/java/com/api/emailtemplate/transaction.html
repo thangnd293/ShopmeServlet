@@ -38,31 +38,26 @@
           Payment received
         </h3>
 
-        <div class="image" style="width: 18 0px; margin: 50px auto">
+        <div class="image" style="width: 180px; margin: 50px auto">
           <img
             src="https://f002.backblazeb2.com/file/summonshop/check.jpg"
             style="display: block; height: 100%; width: 100%; object-fit: cover"
           />
         </div>
-        <p style="font-size: 40px">@<b>Phát</b></p>
+        <p style="font-size: 40px">@<b><%NAME></b></p>
         <p style="font-size: 14px; color: #555 !important">
           Thank you for your payment of <strong>$<%AMOUNT></strong> on
           <strong><%DATE></strong>
         </p>
 
-        <table style="width: 100%; border-collapse: collapse">
+        <table style="width: 100%; max-width: 100%; border-collapse: collapse">
           <tr>
             <th style="border: 1px solid #888">sku</th>
             <th style="border: 1px solid #888">Name</th>
             <th style="border: 1px solid #888">Quantity</th>
             <th style="border: 1px solid #888">Total</th>
           </tr>
-          <tr>
-            <td style="border: 1px solid #888">123</td>
-            <td style="border: 1px solid #888">123</td>
-            <td style="border: 1px solid #888">123</td>
-            <td style="border: 1px solid #888">123</td>
-          </tr>
+          <%LIST-ITEM>
         </table>
         <p style="font-size: 10px">
           If you have any questions, feel free message us at

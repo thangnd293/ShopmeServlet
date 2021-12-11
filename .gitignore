@@ -1,5 +1,7 @@
 target
 text.txt
+data-sample
+emailtemplate
 # Elastic Beanstalk Files
 .elasticbeanstalk/*
 !.elasticbeanstalk/*.cfg.yml

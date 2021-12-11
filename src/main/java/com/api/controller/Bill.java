@@ -1,8 +1,11 @@
 package com.api.controller;
 
 import java.io.IOException;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.ArrayList;
 
+import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -12,18 +15,36 @@ import javax.servlet.http.HttpServletResponse;
 import com.api.helper.Check;
 import com.api.helper.HandleData;
 import com.api.helper.returnClass.JsonMany;
-import com.api.helper.returnClass.JsonOne;
 
 import static com.api.helper.HandleJson.printJson;
 import static com.api.helper.HandleJson.printJsonError;
 import com.api.model.bill.BillMapping;
 import com.api.model.bill.BillModel;
+import com.api.model.bill.ItemModel;
 import com.api.model.user.UserModel;
 import com.api.service.bill.BillService;
+import com.api.utils.EmailUtil;
 import com.google.gson.JsonObject;
 
 @WebServlet(urlPatterns = "/api/v1/bill/*")
 public class Bill extends HttpServlet {
+
+    private String host;
+    private String port;
+    private String email;
+    private String password;
+
+    public void init() {
+        ServletContext context = getServletContext();
+        host = context.getInitParameter("host");
+        port = context.getInitParameter("port");
+        email = context.getInitParameter("email");
+        password = context.getInitParameter("password");
+    }
+
+    // public Bill() {
+    //     // super();
+    // }
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -38,7 +59,7 @@ public class Bill extends HttpServlet {
             String[] pathParts = pathInfo.split("/");
             // api/v1/bill/my-bill
             // User lay bill cua user
-            if(pathParts.length == 1 && pathParts[1].equals("my-bill")) {
+            if(pathParts.length == 2 && pathParts[1].equals("my-bill")) {
                 this.userGetUsersBill(req, resp);
             } else {
                 printJsonError("fail", "Not found", 404, resp);
@@ -49,9 +70,7 @@ public class Bill extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         resp.setContentType("application/json");
-
         try {
-
             UserModel user = (UserModel) req.getAttribute("user");
 
             if (!Check.isUser(user)) {
@@ -66,9 +85,40 @@ public class Bill extends HttpServlet {
             BillService billService = new BillService();
             bill = billService.addBill(bill);
 
-            JsonOne<BillModel> result = new JsonOne<BillModel>(bill);
+            String subject = "Reset your password (Valid for 5 minutes)";
+            String path = this.getServletContext().getRealPath("/WEB-INF/classes/com/api/emailtemplate/transaction.html");
+            String pathItem = this.getServletContext().getRealPath("/WEB-INF/classes/com/api/emailtemplate/html.html");
 
-            String json = result.toString();
+            String html = EmailUtil.getHtmlEmail(path);
+            String htmlItem = EmailUtil.getHtmlEmail(pathItem);
+            String htmlListItem = "";
+            
+
+            ZoneId zid = ZoneId.of("Asia/Ho_Chi_Minh");  
+            String date = LocalDate.now(zid).toString();
+            html = html.replace("<%NAME>", user.getFname());
+            html = html.replace("<%AMOUNT>", String.valueOf(bill.getAmount()));
+            html = html.replace("<%DATE>", date);
+
+            for (ItemModel item : bill.getItems()) {
+                String itemTemplate = "";
+                itemTemplate = htmlItem.replace("<%SKU>", item.getSku());
+                itemTemplate = htmlItem.replace("<%NAME>", item.getName());
+                itemTemplate = htmlItem.replace("<%QUANTITY>",Integer.toString(item.getQuantity()));
+                itemTemplate = htmlItem.replace("<%TOTAL>", String.valueOf(item.getTotal()));
+                htmlListItem += itemTemplate;
+            }
+
+            html = html.replace("<%LIST-ITEM>", htmlListItem);
+
+            boolean checkIsEmailSend = EmailUtil.sendEmail(host, port, email, password, user.getEmail(), subject, html);
+
+            if (!checkIsEmailSend) {
+                throw new Exception("There were an error. Please try again!");
+            }
+
+            String json = String.format("{ status: %s , message: %s}", "success",
+                    "Thank you, bill has been sent to your email");
             printJson(json, 200, resp);
 
         } catch (Exception e) {
