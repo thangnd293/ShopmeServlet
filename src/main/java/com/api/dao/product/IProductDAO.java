@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import com.api.model.product.ProductModel;
 import com.mongodb.BasicDBObject;
 
+import org.bson.conversions.Bson;
+
 public interface IProductDAO {
     ProductModel getOne(String id);
 
@@ -13,6 +15,8 @@ public interface IProductDAO {
     ArrayList<ProductModel> getAll();
 
     ArrayList<ProductModel> getAll(String categoryPath, BasicDBObject filters, BasicDBObject sort);
+
+    ArrayList<ProductModel> getAll(Bson query, BasicDBObject filters, BasicDBObject sort);
 
     ProductModel updateOne(String id, ProductModel newProduct);
 

@@ -14,6 +14,7 @@ import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.FindOneAndReplaceOptions;
 import com.mongodb.client.model.ReturnDocument;
 
+import org.bson.conversions.Bson;
 
 import static com.mongodb.client.model.Filters.eq;
 
@@ -44,6 +45,26 @@ public class ProductDAO implements IProductDAO {
             cursor = productCollection.find(Filters.regex("categoryPath", categoryPath)).filter(filters).sort(sort).iterator();
         } else {
             cursor = productCollection.find(Filters.regex("categoryPath", categoryPath)).iterator();
+        }
+
+        while (cursor.hasNext()) {
+            ProductModel product = cursor.next();
+            productList.add(product);
+        }
+
+        return productList;
+    }
+
+    @Override
+    public ArrayList<ProductModel> getAll(Bson query, BasicDBObject filters, BasicDBObject sort) {
+        ArrayList<ProductModel> productList = new ArrayList<ProductModel>();
+
+        MongoCursor<ProductModel> cursor = null;
+        
+        if(filters != null) {
+            cursor = productCollection.find(query).filter(filters).sort(sort).iterator();
+        } else {
+            cursor = productCollection.find(query).iterator();
         }
 
         while (cursor.hasNext()) {

@@ -13,9 +13,12 @@ import com.api.model.filter.FilterModel;
 import com.api.model.product.ProductModel;
 import com.api.model.variant.VariantModel;
 import com.mongodb.BasicDBObject;
+import com.mongodb.client.model.Filters;
+
+import org.bson.conversions.Bson;
 
 public class ProductService implements IProductService {
-   
+
     @Override
     public ProductModel getProduct(String id) throws Exception {
         ProductDAO productDao = new ProductDAO();
@@ -24,15 +27,17 @@ public class ProductService implements IProductService {
             throw new Exception("Product does not exist!!");
         }
 
-        BasicDBObject filter = BasicDBObject.parse(String.format("{\"$and\": [ { \"brandId\": \"%s\" }, { \"_id\": { \"$not\": { \"$eq\": \"%s\" } } } ]}", product.getBrandId(), id));
+        BasicDBObject filter = BasicDBObject.parse(
+                String.format("{\"$and\": [ { \"brandId\": \"%s\" }, { \"_id\": { \"$not\": { \"$eq\": \"%s\" } } } ]}",
+                        product.getBrandId(), id));
         ArrayList<ProductModel> relateProducts = productDao.getAll(product.getCategoryPath(), filter, null);
         // Giam tai du lieu khong can thiet
         for (ProductModel p : relateProducts) {
             preparePrint(p);
         }
-        if(relateProducts.size() > 0) {
+        if (relateProducts.size() > 0) {
             product.setRelateProducts(relateProducts);
-        }   
+        }
 
         product.setFacets(null);
         return product;
@@ -51,17 +56,28 @@ public class ProductService implements IProductService {
         CategoryDAO categoryDAO = new CategoryDAO();
 
         String categoryPath = "/";
-
+        Bson query = null;
         if (categoryId == null) {
-            categoryPath = "/";
+            query = Filters.regex("categoryPath", categoryPath);
         } else {
             CategoryModel category = categoryDAO.getOne(categoryId);
             categoryPath = categoryId == null ? "/" : category.getPath();
+
+            if (categoryId.startsWith("88")) {
+                query = Filters.eq("brand", category.getName());
+                if (categoryId.equals("8836") ||
+                        categoryId.equals("8837") ||
+                        categoryId.equals("8893")) {
+                    query = BasicDBObject.parse("{}");
+                }
+            } else {
+                query = Filters.regex("categoryPath", category.getPath());
+            }
         }
 
         ArrayList<ProductModel> productList = new ArrayList<ProductModel>();
 
-        productList = productDao.getAll(categoryPath, filterProduct(filter), sortProduct(sortParam));
+        productList = productDao.getAll(query, filterProduct(filter), sortProduct(sortParam));
 
         return productList;
     }
@@ -78,7 +94,7 @@ public class ProductService implements IProductService {
         for (ProductModel product : productList) {
             preparePrint(product);
         }
-        
+
         return productList;
     }
 
@@ -150,7 +166,7 @@ public class ProductService implements IProductService {
             throw new Exception("Variant does not exist!!");
         }
     }
- 
+
     private void handleProductData(ProductModel product) throws Exception {
         FilterDAO filterDao = new FilterDAO();
         CategoryDAO categoryDAO = new CategoryDAO();
@@ -353,7 +369,7 @@ public class ProductService implements IProductService {
         product.setCreateAt(createAt != null ? createAt : product.getCreateAt());
         product.setVariants(variants != null ? variants : product.getVariants());
     }
-   
+
     private void preparePrint(ProductModel product) {
         product.setFacets(null);
         product.setLongDescription(null);
