@@ -51,7 +51,7 @@ public class ProductMapping implements IMapping<ProductModel> {
     String color = object.get("color") != null ? object.get("color").getAsString() : null;
     String brandId = object.get("brandId") != null ? object.get("brandId").getAsString() : null;
 
-    Boolean isFeatured = object.get("isFeatured") != null ? object.get("isFeatured").getAsBoolean() : null;
+    Boolean isFeatured = object.get("isFeatured") != null ? object.get("isFeatured").getAsBoolean() : false;
 
     ArrayList<String> filters = null;
     JsonArray jsonFilters = object.getAsJsonArray("filters");

@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 import javax.servlet.ServletException;
+import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -20,6 +21,10 @@ import com.api.model.product.ProductModel;
 import com.api.service.product.ProductService;
 import com.google.gson.JsonObject;
 
+@MultipartConfig(fileSizeThreshold = 1024 * 1024 * 25,
+        maxFileSize = 1024 * 1024 * 25,
+        maxRequestSize = 1024 * 1024 * 25
+)
 @WebServlet(urlPatterns = "/api/v1/products/*")
 public class Product extends HttpServlet {
     @Override
@@ -84,7 +89,7 @@ public class Product extends HttpServlet {
             if (pathParts.length == 2 && Check.isNumeric(pathParts[1])) {
                 JsonObject data = HandleData.dataToJson(req);
                 ProductService productService = new ProductService();
-                
+
                 try {
                     ProductModel product = ProductMapping.map(data);
                     product = productService.updateProduct(pathParts[1], product);
