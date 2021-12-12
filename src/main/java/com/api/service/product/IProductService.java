@@ -3,6 +3,7 @@ package com.api.service.product;
 import java.util.ArrayList;
 
 import com.api.model.product.ProductModel;
+import com.mongodb.BasicDBObject;
 
 public interface IProductService {
 
@@ -10,7 +11,7 @@ public interface IProductService {
 
     ProductModel addProduct(ProductModel product) throws Exception;
 
-    ArrayList<ProductModel> getAllProduct();
+    ArrayList<ProductModel> getAllProduct(BasicDBObject query);
 
     ArrayList<ProductModel> getProductFeatures();
 

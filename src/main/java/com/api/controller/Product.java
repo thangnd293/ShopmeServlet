@@ -20,11 +20,10 @@ import com.api.model.product.ProductMapping;
 import com.api.model.product.ProductModel;
 import com.api.service.product.ProductService;
 import com.google.gson.JsonObject;
+import com.mongodb.BasicDBObject;
 
-@MultipartConfig(fileSizeThreshold = 1024 * 1024 * 25,
-        maxFileSize = 1024 * 1024 * 25,
-        maxRequestSize = 1024 * 1024 * 25
-)
+@MultipartConfig(fileSizeThreshold = 1024 * 1024 * 25, maxFileSize = 1024 * 1024 * 25, maxRequestSize = 1024 * 1024
+        * 25)
 @WebServlet(urlPatterns = "/api/v1/products/*")
 public class Product extends HttpServlet {
     @Override
@@ -44,6 +43,10 @@ public class Product extends HttpServlet {
             // /api/v1/product/features
             if (pathParts.length == 2 && pathParts[1].equals("features")) {
                 this.getAllProductFeatures(req, resp);
+            }
+            // /api/v1/product/search
+            else if (pathParts.length == 2 && pathParts[1].equals("search")) {
+                this.searchProduct(req, resp);
             }
             // /api/v1/product/:id
             else if (pathParts.length == 2) {
@@ -169,6 +172,24 @@ public class Product extends HttpServlet {
             ProductModel product = productService.getProduct(id);
 
             JsonOne<ProductModel> result = new JsonOne<ProductModel>(product);
+
+            String json = result.toString();
+            printJson(json, 200, resp);
+        } catch (Exception e) {
+            printJsonError("fail", e.getMessage(), 404, resp);
+        }
+    }
+
+    private void searchProduct(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+        ProductService productService = new ProductService();
+
+        String key = req.getParameter("key");
+        String queryStr = String.format("{ \"name\": { \"$regex\": \"%s\", \"$options\": \"i\"} }", key);
+        BasicDBObject query = BasicDBObject.parse(queryStr);
+        try {
+            ArrayList<ProductModel> products = productService.getAllProduct(query);
+
+            JsonMany<ProductModel> result = new JsonMany<ProductModel>(products.size(), products);
 
             String json = result.toString();
             printJson(json, 200, resp);

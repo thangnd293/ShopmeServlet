@@ -44,9 +44,13 @@ public class ProductService implements IProductService {
     }
 
     @Override
-    public ArrayList<ProductModel> getAllProduct() {
+    public ArrayList<ProductModel> getAllProduct(BasicDBObject query) {
         ProductDAO productDao = new ProductDAO();
-        return productDao.getAll();
+        ArrayList<ProductModel> productList = new ArrayList<ProductModel>();
+
+        productList = productDao.getAll(query, null, null);
+
+        return productList;
     }
 
     @Override
