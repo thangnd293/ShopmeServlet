@@ -28,6 +28,9 @@ public class BillService implements IBillService {
         BillDAO billDAO = new BillDAO();
 
         ArrayList<BillModel> bills = billDAO.getAll();
+        for (BillModel bill : bills) {
+            bill.set_id(bill.getId().toString());
+        }
         return bills;
     }
 
@@ -40,6 +43,10 @@ public class BillService implements IBillService {
         }
 
         ArrayList<BillModel> bills = billDAO.getAll(userId);
+
+        for (BillModel bill : bills) {
+            bill.set_id(bill.getId().toString());
+        }
         return bills;
     }
     
