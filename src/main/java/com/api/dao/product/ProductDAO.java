@@ -64,7 +64,7 @@ public class ProductDAO implements IProductDAO {
         if(filters != null) {
             cursor = productCollection.find(query).filter(filters).sort(sort).iterator();
         } else {
-            cursor = productCollection.find(query).iterator();
+            cursor = productCollection.find(query).sort(sort).iterator();
         }
 
         while (cursor.hasNext()) {

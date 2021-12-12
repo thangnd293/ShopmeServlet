@@ -337,8 +337,8 @@ public class ProductService implements IProductService {
             sortField = sortParam.substring(1);
             sortType = -1;
         }
+        BasicDBObject sort = new BasicDBObject(sortField, sortType);
 
-        BasicDBObject sort = BasicDBObject.parse(String.format("{ %s: %d}", sortField, sortType));
         return sort;
     }
 
