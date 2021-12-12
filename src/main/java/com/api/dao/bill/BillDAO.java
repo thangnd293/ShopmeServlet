@@ -24,8 +24,8 @@ public class BillDAO implements IBillDAO {
     @Override
     public ArrayList<BillModel> getAll() {
         ArrayList<BillModel> bills = new ArrayList<BillModel>();
-        BasicDBObject sortObject = BasicDBObject.parse("{ \"createAt\" : 1 }");
-        MongoCursor<BillModel> cursor = billCollection.find().sort(sortObject).iterator();
+        BasicDBObject sortBson = new BasicDBObject("createAt", -1);
+        MongoCursor<BillModel> cursor = billCollection.find().sort(sortBson).iterator();
 
         while (cursor.hasNext()) {
             BillModel bill = cursor.next();

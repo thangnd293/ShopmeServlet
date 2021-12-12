@@ -48,7 +48,7 @@ public class DashBoardDAO implements IDashBoardDAO {
         double growthRate = 0;
 
         if (quantityPrevMonth != 0) {
-            growthRate = (quantityCurrMonth / quantityPrevMonth) * 100 - 100;
+            growthRate = (quantityCurrMonth / quantityPrevMonth) * 100;
         } else {
             growthRate = 0;
         }
@@ -85,7 +85,7 @@ public class DashBoardDAO implements IDashBoardDAO {
         double growthRate = 0;
 
         if (quantityPrevMonth != 0) {
-            growthRate = (quantityCurrMonth / quantityPrevMonth) * 100 - 100;
+            growthRate = ((double)quantityCurrMonth / quantityPrevMonth) * 100;
         } else {
             growthRate = 0;
         }
@@ -134,7 +134,7 @@ public class DashBoardDAO implements IDashBoardDAO {
         double growthRate = 0;
 
         if (countPrevMonth != 0) {
-            growthRate = (countCurrMonth / countPrevMonth) * 100 - 100;
+            growthRate = ((double)countCurrMonth / countPrevMonth) * 100;
         } else {
             growthRate = 0;
         }
