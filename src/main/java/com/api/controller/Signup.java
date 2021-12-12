@@ -50,6 +50,12 @@ public class Signup extends HttpServlet {
       UserModel userSignup = UserMapping.map(data);
       UserModel user = authService.signup(userSignup);
 
+      boolean checkIsEmailSend = this.sendEmail(user, userService);
+
+      if (!checkIsEmailSend) {
+        throw new Exception("There were an error. Please try again!");
+      }        
+
       this.sendEmail(user, userService);
 
       String json = String.format("{ status: %s , message: %s, email: %s }", "success" , "Please check your email to confirm your account", user.getEmail());
@@ -60,18 +66,13 @@ public class Signup extends HttpServlet {
     }
   }
 
-  private void sendEmail(UserModel user, UserService userService) throws Exception {
+  private boolean sendEmail(UserModel user, UserService userService) throws Exception {
     String subject = "Welcome to SummonShop (Valid for 5 minutes)";
     String path = this.getServletContext().getRealPath("/emailtemplate/emailVerify.html");
 
     String html = EmailUtil.getHtmlEmail(path);
     html = html.replace("<%NAME>", user.getFname());
     html = html.replace("<%CODE>", user.getVerifyCode());
-    boolean checkIsEmailSend = EmailUtil.sendEmail(host, port, email, password, user.getEmail(), subject, html);
-
-    if(!checkIsEmailSend) {
-      userService.deleteUser(user.getId());
-      throw new Exception("There were an error. Please try again!");
-    }
+    return EmailUtil.sendEmail(host, port, email, password, user.getEmail(), subject, html);
   }
 }

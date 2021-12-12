@@ -2,6 +2,8 @@ package com.api.controller;
 
 import java.io.IOException;
 
+import javax.mail.MessagingException;
+import javax.mail.internet.AddressException;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -47,13 +49,7 @@ public class ForgotPassword extends HttpServlet {
 
             String passwordResetCode = authService.forgotPassword(userEmail);
 
-            String subject = "Reset your password (Valid for 5 minutes)";
-            String path = this.getServletContext().getRealPath("/emailtemplate/resetpassword.html");
-
-            String html = EmailUtil.getHtmlEmail(path);
-            html = html.replace("<%CODE>", passwordResetCode);
-
-            boolean checkIsEmailSend = EmailUtil.sendEmail(host, port, email, password, userEmail, subject, html);
+            boolean checkIsEmailSend = this.sendEmail(userEmail, passwordResetCode);
 
             if (!checkIsEmailSend) {
                 throw new Exception("There were an error. Please try again!");
@@ -66,5 +62,15 @@ public class ForgotPassword extends HttpServlet {
         } catch (Exception e) {
             printJsonError("fail", e.getMessage(), 404, resp);
         }
+    }
+
+    private boolean sendEmail(String userEmail, String passwordResetCode) throws AddressException, MessagingException {
+        String subject = "Reset your password (Valid for 5 minutes)";
+            String path = this.getServletContext().getRealPath("/emailtemplate/resetpassword.html");
+
+            String html = EmailUtil.getHtmlEmail(path);
+            html = html.replace("<%CODE>", passwordResetCode);
+
+            return EmailUtil.sendEmail(host, port, email, password, userEmail, subject, html);
     }
 }

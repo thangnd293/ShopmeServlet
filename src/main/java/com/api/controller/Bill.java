@@ -5,6 +5,8 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.ArrayList;
 
+import javax.mail.MessagingException;
+import javax.mail.internet.AddressException;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -81,33 +83,7 @@ public class Bill extends HttpServlet {
             BillService billService = new BillService();
             bill = billService.addBill(bill);
 
-            String subject = "Thank you ^^";
-            String path = this.getServletContext().getRealPath("/emailtemplate/transaction.html");
-            String pathItem = this.getServletContext().getRealPath("/emailtemplate/item.html");
-
-            String html = EmailUtil.getHtmlEmail(path);
-            String htmlItem = EmailUtil.getHtmlEmail(pathItem);
-            String htmlListItem = "";
-            
-
-            ZoneId zid = ZoneId.of("Asia/Ho_Chi_Minh");  
-            String date = LocalDate.now(zid).toString();
-            html = html.replace("<%NAME>", user.getFname());
-            html = html.replace("<%AMOUNT>", String.valueOf(bill.getAmount()));
-            html = html.replace("<%DATE>", date);
-
-            for (ItemModel item : bill.getItems()) {
-                String itemTemplate = "";
-                itemTemplate = htmlItem.replace("<%SKU>", item.getSku());
-                itemTemplate = itemTemplate.replace("<%NAME>", item.getName());
-                itemTemplate = itemTemplate.replace("<%QUANTITY>",Integer.toString(item.getQuantity()));
-                itemTemplate = itemTemplate.replace("<%TOTAL>", String.valueOf(item.getTotal()));
-                htmlListItem += itemTemplate;
-            }
-
-            html = html.replace("<%LIST-ITEM>", htmlListItem);
-
-            boolean checkIsEmailSend = EmailUtil.sendEmail(host, port, email, password, user.getEmail(), subject, html);
+            boolean checkIsEmailSend = this.sendEmail(user, bill);
 
             if (!checkIsEmailSend) {
                 throw new Exception("There were an error. Please try again!");
@@ -153,5 +129,35 @@ public class Bill extends HttpServlet {
         } catch (Exception e) {
             printJsonError("fail", e.getMessage(), 404, resp);
         }
+    }
+
+    private boolean sendEmail(UserModel user, BillModel bill) throws AddressException, MessagingException {
+        String subject = "Thank you ^^";
+            String path = this.getServletContext().getRealPath("/emailtemplate/transaction.html");
+            String pathItem = this.getServletContext().getRealPath("/emailtemplate/item.html");
+
+            String html = EmailUtil.getHtmlEmail(path);
+            String htmlItem = EmailUtil.getHtmlEmail(pathItem);
+            String htmlListItem = "";
+            
+
+            ZoneId zid = ZoneId.of("Asia/Ho_Chi_Minh");  
+            String date = LocalDate.now(zid).toString();
+            html = html.replace("<%NAME>", user.getFname());
+            html = html.replace("<%AMOUNT>", String.valueOf(bill.getAmount()));
+            html = html.replace("<%DATE>", date);
+
+            for (ItemModel item : bill.getItems()) {
+                String itemTemplate = "";
+                itemTemplate = htmlItem.replace("<%SKU>", item.getSku());
+                itemTemplate = itemTemplate.replace("<%NAME>", item.getName());
+                itemTemplate = itemTemplate.replace("<%QUANTITY>",Integer.toString(item.getQuantity()));
+                itemTemplate = itemTemplate.replace("<%TOTAL>", String.valueOf(item.getTotal()));
+                htmlListItem += itemTemplate;
+            }
+
+            html = html.replace("<%LIST-ITEM>", htmlListItem);
+
+            return EmailUtil.sendEmail(host, port, email, password, user.getEmail(), subject, html);
     }
 }
